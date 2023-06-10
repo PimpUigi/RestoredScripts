@@ -5,14 +5,30 @@
 //-------Aliases-------//
 #alias 71: TYPE_BUTTONPRIZE
 
+#alias Object.Value0	:	Prize.GiveOutTimer
+#alias Object.Value1	:	Prize.Timer
+#alias Object.Value2	:	Prize.TimerActivated
+
+#alias 0 	:	Prize.Spikes
+#alias 1 	:	Prize.AirBubble_1
+#alias 2 	:	Prize.AirBubble_2
+#alias 3 	:	Prize.Score
+#alias 4 	:	Prize.Rings_1
+#alias 5 	:	Prize.Rings_2
+
 
 sub ObjectMain
 	switch Object.State
 	case 0
 		if Object[-1].PropertyValue==1
-                        if Object.Value3>8
+			Prize.TimerActivated = True
+		endif
+		if Prize.TimerActivated == True
+			Prize.Timer++
+		endif
+                        if Prize.Timer==9
 				switch Object.PropertyValue
-				case 0
+				case Prize.Spikes
 					Object[-1].Type=TypeName[BlankObject]
 					Object[+1].Type=TypeName[MovingSpikes]
 					Object[+3].Type=TypeName[MovingSpikes]
@@ -20,7 +36,7 @@ sub ObjectMain
 					Object[+7].Type=TypeName[MovingSpikes]
 					Object[+9].Type=TypeName[MovingSpikes]
 					break
-				case 1
+				case Prize.AirBubble_1
 					Object[-3].Type=TypeName[ButtonPrize]
 					Object[-1].Type=TypeName[ButtonPrize]
 					Object[+1].Type=TypeName[ButtonPrize]
@@ -34,7 +50,7 @@ sub ObjectMain
 					Object[+5].State=1
 					Object[+7].State=1
 					break
-				case 2
+				case Prize.AirBubble_2
 					Object[-5].Type=TypeName[ButtonPrize]
 					Object[-3].Type=TypeName[ButtonPrize]
 					Object[-1].Type=TypeName[ButtonPrize]
@@ -48,7 +64,7 @@ sub ObjectMain
 					Object[+3].State=1
 					Object[+5].State=1
 					break
-				case 3
+				case Prize.Score
 					Object[-7].Type=TypeName[ObjectScore]
 					Object[-5].Type=TypeName[ObjectScore]
 					Object[-3].Type=TypeName[ObjectScore]
@@ -62,7 +78,7 @@ sub ObjectMain
 					Object[+3].PropertyValue=3
 					Player.Score+=5000
 					break
-				case 4
+				case Prize.Rings_1
 					Object[-9].Type=TypeName[BlankObject]
 					Object[-7].Type=TypeName[BlankObject]
 					Object[-5].Type=TypeName[BlankObject]
@@ -71,7 +87,7 @@ sub ObjectMain
 					Object[-1].State=2
 					Object[+1].Type=TypeName[BlankObject]
 					break
-				case 5
+				case Prize.Rings_2
 					Object[-11].Type=TypeName[BlankObject]
 					Object[-9].Type=TypeName[BlankObject]
 					Object[-7].Type=TypeName[BlankObject]
@@ -84,9 +100,9 @@ sub ObjectMain
 				CreateTempObject(TypeName[PushButton],2,Object[-1].XPos,Object[-1].YPos)
 			        Object.Type=TypeName[BlankObject]
 			else
-                                if Object.Value3<1
+                                if Prize.Timer==1
                                         switch Object.PropertyValue
-                                        case 0
+                                        case Prize.Spikes
 						CreateTempObject(TypeName[Explosion],0,Object[-1].XPos,Object[-1].YPos)
 						CreateTempObject(TypeName[Explosion],0,Object[+1].XPos,Object[+1].YPos)
 						CreateTempObject(TypeName[Explosion],0,Object[+3].XPos,Object[+3].YPos)
@@ -94,7 +110,7 @@ sub ObjectMain
 						CreateTempObject(TypeName[Explosion],0,Object[+7].XPos,Object[+7].YPos)
 						CreateTempObject(TypeName[Explosion],0,Object[+9].XPos,Object[+9].YPos)
 					        break
-                                        case 1
+                                        case Prize.AirBubble_1
 						CreateTempObject(TypeName[Explosion],0,Object[-3].XPos,Object[-3].YPos)
 						CreateTempObject(TypeName[Explosion],0,Object[-1].XPos,Object[-1].YPos)
 						CreateTempObject(TypeName[Explosion],0,Object[+1].XPos,Object[+1].YPos)
@@ -102,7 +118,7 @@ sub ObjectMain
 						CreateTempObject(TypeName[Explosion],0,Object[+5].XPos,Object[+5].YPos)
 						CreateTempObject(TypeName[Explosion],0,Object[+7].XPos,Object[+7].YPos)
 					        break
-                                        case 2
+                                        case Prize.AirBubble_2
 						CreateTempObject(TypeName[Explosion],0,Object[-5].XPos,Object[-5].YPos)
 						CreateTempObject(TypeName[Explosion],0,Object[-3].XPos,Object[-3].YPos)
 						CreateTempObject(TypeName[Explosion],0,Object[-1].XPos,Object[-1].YPos)
@@ -110,7 +126,7 @@ sub ObjectMain
 						CreateTempObject(TypeName[Explosion],0,Object[+3].XPos,Object[+3].YPos)
 						CreateTempObject(TypeName[Explosion],0,Object[+5].XPos,Object[+5].YPos)
 					        break
-                                        case 3
+                                        case Prize.Score
 						CreateTempObject(TypeName[Explosion],0,Object[-7].XPos,Object[-7].YPos)
 						CreateTempObject(TypeName[Explosion],0,Object[-5].XPos,Object[-5].YPos)
 						CreateTempObject(TypeName[Explosion],0,Object[-3].XPos,Object[-3].YPos)
@@ -118,7 +134,7 @@ sub ObjectMain
 						CreateTempObject(TypeName[Explosion],0,Object[+1].XPos,Object[+1].YPos)
 						CreateTempObject(TypeName[Explosion],0,Object[+3].XPos,Object[+3].YPos)
 					        break
-                                        case 4
+                                        case Prize.Rings_1
 						CreateTempObject(TypeName[Explosion],0,Object[-9].XPos,Object[-9].YPos)
 						CreateTempObject(TypeName[Explosion],0,Object[-7].XPos,Object[-7].YPos)
 						CreateTempObject(TypeName[Explosion],0,Object[-5].XPos,Object[-5].YPos)
@@ -126,7 +142,7 @@ sub ObjectMain
 						CreateTempObject(TypeName[Explosion],0,Object[-1].XPos,Object[-1].YPos)
 						CreateTempObject(TypeName[Explosion],0,Object[+1].XPos,Object[+1].YPos)
 					        break
-                                        case 5
+                                        case Prize.Rings_2
 						CreateTempObject(TypeName[Explosion],0,Object[-11].XPos,Object[-11].YPos)
 						CreateTempObject(TypeName[Explosion],0,Object[-9].XPos,Object[-9].YPos)
 						CreateTempObject(TypeName[Explosion],0,Object[-7].XPos,Object[-7].YPos)
@@ -136,13 +152,11 @@ sub ObjectMain
 					        break
 					endswitch
                                 endif
-                        Object.Value3++
                         endif
-		endif
 		break
 	case 1
-		Object.Value0++
-		if Object.Value0==60
+		Prize.GiveOutTimer++
+		if Prize.GiveOutTimer==60
 			CreateTempObject(TypeName[AirBubble],5,Object.XPos,Object.YPos)
 			Object[TempObjectPos].Value2=Object[TempObjectPos].XPos
 			Rand(Object[TempObjectPos].Value1,256)
@@ -150,7 +164,7 @@ sub ObjectMain
 			Object[TempObjectPos].DrawOrder=4
 			Object[TempObjectPos].Value3=-34816
 		endif
-		if Object.Value0==120
+		if Prize.GiveOutTimer==120
 			CreateTempObject(TypeName[AirBubble],5,Object.XPos,Object.YPos)
 			Object[TempObjectPos].Value2=Object[TempObjectPos].XPos
 			Rand(Object[TempObjectPos].Value1,256)
@@ -161,18 +175,18 @@ sub ObjectMain
 		endif
 		break
 	case 2
-		Object.Value0++
-		if Object.Value0==360
+		Prize.GiveOutTimer++
+		if Prize.GiveOutTimer==360
 			Object.Type=TypeName[BlankObject]
 			Object.Priority=0
 		endif
-		TempValue0=Object.Value0
+		TempValue0=Prize.GiveOutTimer
 		TempValue0&=15
 		if TempValue0==0
 			CreateTempObject(TypeName[LoseRing],0,Object.XPos,Object.YPos)
 			Object[TempObjectPos].YPos-=12058624
 			Object[TempObjectPos].AnimationSpeed=256
-			TempValue1=Object.Value0
+			TempValue1=Prize.GiveOutTimer
 			TempValue1>>=4
 			TempValue1%=10
 			switch TempValue1

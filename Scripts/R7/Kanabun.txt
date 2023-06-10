@@ -124,21 +124,13 @@ sub ObjectPlayerInteraction
 		if Object.Value4==0
 			PlayerObjectCollision(C_TOUCH,-14,-14,14,14)
 			if CheckResult==1
-				if Object.Direction==FACING_LEFT
-					CallFunction(PlayerObject_BadnikBreak)
-				else
-					CallFunction(PlayerObject_BadnikBreakFlip)
-				endif
+				CallFunction(PlayerObject_BadnikBreak)
 			endif
 		else
 			if Player.Animation==ANI_JUMPING
 				PlayerObjectCollision(C_TOUCH,-14,-14,14,14)
 				if CheckResult==1
-					if Object.Direction==FACING_LEFT
-						CallFunction(PlayerObject_BadnikBreak)
-					else
-						CallFunction(PlayerObject_BadnikBreakFlip)
-					endif
+					CallFunction(PlayerObject_BadnikBreak)
 				endif
 			endif
 		endif
