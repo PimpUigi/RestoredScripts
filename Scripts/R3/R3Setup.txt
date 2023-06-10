@@ -1,0 +1,983 @@
+//------------Sonic CD R3 Setup Script-------------//
+//--------Scripted by Christian Whitehead 'The Taxman'--------//
+//-------Unpacked By Rubberduckycooly's Script Unpacker-------//
+
+//-------Aliases-------//
+#alias 45: TYPE_R3SETUP
+
+
+// Function declarations
+#function R3Setup_CheckTile
+#function R3Setup_TileCollision
+#function R3Setup_BumpHorizontal
+#function R3Setup_BumpVertical
+#function R3Setup_BumpSlope
+#function R3Setup_BumpVelAngle
+#function R3Setup_BumpPosAngle
+
+sub ObjectMain
+	if Object.Value3==0
+		if Object.Value2<3145728
+			Object.Value2+=65536
+		else
+			Object.Value3=1
+		endif
+	else
+		if Object.Value2>-3145728
+			Object.Value2-=65536
+		else
+			Object.Value3=0
+		endif
+	endif
+	if Object[24].PropertyValue!=1
+		RotatingDrum_Timer++
+		RotatingDrum_Timer%=20
+	endif
+endsub
+
+
+sub ObjectPlayerInteraction
+	switch Stage.ListPos
+	default
+		ATan2(TempValue0,Player.XVelocity,Player.YVelocity)
+		TempValue0-=32
+		TempValue0&=192
+		
+		switch TempValue0
+		case 0
+			TempValue2=Player.XPos
+			TempValue2>>=16
+			TempValue2+=Player.CollisionLeft
+			TempValue3=Player.YPos
+			TempValue3>>=16
+			TempValue3+=Player.CollisionBottom
+			TempValue3-=1
+			CallFunction(R3Setup_TileCollision)
+			if CheckResult==0
+				TempValue2=Player.XPos
+				TempValue2>>=16
+				TempValue2+=Player.CollisionRight
+				TempValue2-=1
+				TempValue3=Player.YPos
+				TempValue3>>=16
+				TempValue3+=Player.CollisionBottom
+				TempValue3-=1
+				CallFunction(R3Setup_TileCollision)
+			endif
+			break
+			
+		case 64
+			TempValue2=Player.XPos
+			TempValue2>>=16
+			TempValue2+=Player.CollisionLeft
+			TempValue3=Player.YPos
+			TempValue3>>=16
+			TempValue3+=Player.CollisionTop
+			TempValue3+=6
+			CallFunction(R3Setup_TileCollision)
+			if CheckResult==0
+				TempValue2=Player.XPos
+				TempValue2>>=16
+				TempValue2+=Player.CollisionLeft
+				TempValue3=Player.YPos
+				TempValue3>>=16
+				TempValue3+=Player.CollisionBottom
+				TempValue3-=1
+				CallFunction(R3Setup_TileCollision)
+			endif
+			break
+		
+		case 128
+			TempValue2=Player.XPos
+			TempValue2>>=16
+			TempValue2+=Player.CollisionLeft
+			TempValue3=Player.YPos
+			TempValue3>>=16
+			TempValue3+=Player.CollisionTop
+			CallFunction(R3Setup_TileCollision)
+			if CheckResult==0
+				TempValue2=Player.XPos
+				TempValue2>>=16
+				TempValue2+=Player.CollisionRight
+				TempValue2-=1
+				TempValue3=Player.YPos
+				TempValue3>>=16
+				TempValue3+=Player.CollisionTop
+				CallFunction(R3Setup_TileCollision)
+			endif
+			break
+		
+		case 192
+			TempValue2=Player.XPos
+			TempValue2>>=16
+			TempValue2+=Player.CollisionRight
+			TempValue2-=1
+			TempValue3=Player.YPos
+			TempValue3>>=16
+			TempValue3+=Player.CollisionTop
+			TempValue3+=6
+			CallFunction(R3Setup_TileCollision)
+			if CheckResult==0
+				TempValue2=Player.XPos
+				TempValue2>>=16
+				TempValue2+=Player.CollisionRight
+				TempValue2-=1
+				TempValue3=Player.YPos
+				TempValue3>>=16
+				TempValue3+=Player.CollisionBottom
+				TempValue3-=1
+				CallFunction(R3Setup_TileCollision)
+			endif
+			break
+		endswitch
+		break
+	case 12
+		TempValue2=Player.XPos
+		TempValue2>>=16
+		TempValue4=TempValue2
+		TempValue2-=8
+		TempValue4+=8
+		TempValue3=Player.YPos
+		TempValue3>>=16
+		if Player.YVelocity>=0
+			TempValue3+=Player.CollisionBottom
+			TempValue3-=2
+		else
+			TempValue3+=Player.CollisionTop
+			TempValue3+=2
+		endif
+		TempValue5=TempValue3
+		TempValue7=0
+		Get16x16TileInfo(TempValue0,TempValue2,TempValue3,6)
+		switch TempValue0
+		case 1
+			TempValue7=1
+			break
+		case 3
+			TempValue7=3
+			Get16x16TileInfo(TempValue6,TempValue2,TempValue3,1)
+			break
+		case 5
+			TempValue7=2
+			break
+		endswitch
+		Get16x16TileInfo(TempValue0,TempValue4,TempValue5,6)
+		switch TempValue0
+		case 1
+			TempValue7=1
+			break
+		case 3
+			TempValue7=3
+			Get16x16TileInfo(TempValue6,TempValue4,TempValue5,1)
+			break
+		case 5
+			TempValue7=2
+			break
+		endswitch
+		switch TempValue7
+		case 1
+			if Player.YVelocity>=0
+				Player.Gravity=1
+				if Warp.Count==false
+					PlayStageSfx(1,0)
+				endif
+	#platform: Use_Haptics
+				HapticEffect(11,0,0,0)
+	#endplatform
+				if Player.State==PlayerObject_HandleTailsFlight
+					Player.YVelocity=-262144
+				else
+					Player.YVelocity=-458752
+				endif
+				if Player.State==PlayerObject_Knockback
+					Player.State=PlayerObject_HandleAir
+					Player.Timer=0
+				endif
+			else
+				if Player.Gravity==1
+					Player.YVelocity=262144
+					if Warp.Count==false
+						PlayStageSfx(1,0)
+					endif
+				endif
+			endif
+			break
+		case 2
+			if Player.Gravity==1
+				if Warp.Count==false
+					PlayStageSfx(6,0)
+				endif
+	#platform: Use_Haptics
+				HapticEffect(11,0,0,0)
+	#endplatform
+				if Player.YVelocity>=0
+					Player.YVelocity=-262144
+				else
+					Player.YVelocity=262144
+				endif
+			endif
+			break
+		case 3
+			if Player.Gravity==1
+				if Warp.Count==false
+					PlayStageSfx(1,0)
+				endif
+	#platform: Use_Haptics
+				HapticEffect(11,0,0,0)
+	#endplatform
+				if Player.YVelocity>=0
+					if Player.State==PlayerObject_HandleTailsFlight
+						Player.YVelocity=-262144
+					else
+						Player.YVelocity=-458752
+					endif
+				else
+					Player.YVelocity=262144
+				endif
+				if TempValue6==0
+					if Player.XVelocity>0
+						FlipSign(Player.XVelocity)
+						Player.XVelocity*=5
+						Player.XVelocity>>=2
+						if Player.XVelocity>-131072
+							Player.XVelocity=-131072
+						endif
+					else
+						if Player.XVelocity>-131072
+							Player.XVelocity=-131072
+						endif
+					endif
+				else
+					if Player.XVelocity<0
+						FlipSign(Player.XVelocity)
+						Player.XVelocity*=5
+						Player.XVelocity>>=2
+						if Player.XVelocity<131072
+							Player.XVelocity=131072
+						endif
+					else
+						if Player.XVelocity<131072
+							Player.XVelocity=131072
+						endif
+					endif
+				endif
+				Player.Speed=Player.XVelocity
+			endif
+			break
+		endswitch
+		TempValue3=Player.YPos
+		TempValue3>>=16
+		TempValue5=TempValue3
+		TempValue3-=6
+		TempValue5+=6
+		TempValue2=Player.XPos
+		TempValue2>>=16
+		if Player.XVelocity>0
+			TempValue2+=8
+		else
+			TempValue2-=8
+		endif
+		TempValue4=TempValue2
+		TempValue7=0
+		Get16x16TileInfo(TempValue0,TempValue2,TempValue3,6)
+		switch TempValue0
+		case 3
+			TempValue7=1
+			break
+		case 5
+			TempValue7=2
+			break
+		case 7
+			TempValue7=1
+			break
+		endswitch
+		Get16x16TileInfo(TempValue0,TempValue4,TempValue5,6)
+		switch TempValue0
+		case 3
+			TempValue7=1
+			break
+		case 5
+			TempValue7=2
+			break
+		case 7
+			TempValue7=1
+			break
+		endswitch
+		switch TempValue7
+		case 1
+			if Player.XVelocity>0
+				Player.XVelocity=-327680
+			else
+				Player.XVelocity=327680
+			endif
+			Player.Speed=Player.XVelocity
+			if Warp.Count==false
+				PlayStageSfx(1,0)
+			endif
+			break
+		case 2
+			if Player.XVelocity>0
+				Player.XVelocity=-262144
+			else
+				Player.XVelocity=262144
+			endif
+			Player.Speed=Player.XVelocity
+			if Warp.Count==false
+				PlayStageSfx(6,0)
+			endif
+	#platform: Use_Haptics
+				HapticEffect(11,0,0,0)
+	#endplatform
+			break
+		endswitch
+		break
+	case 13
+		TempValue2=Player.XPos
+		TempValue2>>=16
+		TempValue4=TempValue2
+		TempValue2-=8
+		TempValue4+=8
+		TempValue3=Player.YPos
+		TempValue3>>=16
+		if Player.YVelocity>=0
+			TempValue3+=Player.CollisionBottom
+			TempValue3-=2
+		else
+			TempValue3+=Player.CollisionTop
+			TempValue3+=2
+		endif
+		TempValue5=TempValue3
+		TempValue7=0
+		Get16x16TileInfo(TempValue0,TempValue2,TempValue3,6)
+		switch TempValue0
+		case 1
+			TempValue7=1
+			break
+		case 3
+			TempValue7=3
+			Get16x16TileInfo(TempValue6,TempValue2,TempValue3,1)
+			break
+		case 5
+			TempValue7=2
+			break
+		endswitch
+		Get16x16TileInfo(TempValue0,TempValue4,TempValue5,6)
+		switch TempValue0
+		case 1
+			TempValue7=1
+			break
+		case 3
+			TempValue7=3
+			Get16x16TileInfo(TempValue6,TempValue4,TempValue5,1)
+			break
+		case 5
+			TempValue7=2
+			break
+		endswitch
+		switch TempValue7
+		case 1
+			if Player.YVelocity>=0
+				Player.Gravity=1
+				if Warp.Count==false
+					PlayStageSfx(1,0)
+				endif
+	#platform: Use_Haptics
+				HapticEffect(11,0,0,0)
+	#endplatform
+				if Player.State==PlayerObject_HandleTailsFlight
+					Player.YVelocity=-262144
+				else
+					Player.YVelocity=-458752
+				endif
+				if Player.State==PlayerObject_Knockback
+					Player.State=PlayerObject_HandleAir
+					Player.Timer=0
+				endif
+			else
+				if Player.Gravity==1
+					Player.YVelocity=262144
+					if Warp.Count==false
+						PlayStageSfx(1,0)
+					endif
+				endif
+			endif
+			break
+		case 2
+			if Player.Gravity==1
+				if Warp.Count==false
+					PlayStageSfx(6,0)
+				endif
+	#platform: Use_Haptics
+				HapticEffect(11,0,0,0)
+	#endplatform
+				if Player.YVelocity>=0
+					Player.YVelocity=-262144
+				else
+					Player.YVelocity=262144
+				endif
+			endif
+			break
+		case 3
+			if Player.Gravity==1
+				if Warp.Count==false
+					PlayStageSfx(1,0)
+				endif
+	#platform: Use_Haptics
+				HapticEffect(11,0,0,0)
+	#endplatform
+				if Player.YVelocity>=0
+					if Player.State==PlayerObject_HandleTailsFlight
+						Player.YVelocity=-262144
+					else
+						Player.YVelocity=-458752
+					endif
+				else
+					Player.YVelocity=262144
+				endif
+				if TempValue6==0
+					if Player.XVelocity>0
+						FlipSign(Player.XVelocity)
+						Player.XVelocity*=5
+						Player.XVelocity>>=2
+						if Player.XVelocity>-131072
+							Player.XVelocity=-131072
+						endif
+					else
+						if Player.XVelocity>-131072
+							Player.XVelocity=-131072
+						endif
+					endif
+				else
+					if Player.XVelocity<0
+						FlipSign(Player.XVelocity)
+						Player.XVelocity*=5
+						Player.XVelocity>>=2
+						if Player.XVelocity<131072
+							Player.XVelocity=131072
+						endif
+					else
+						if Player.XVelocity<131072
+							Player.XVelocity=131072
+						endif
+					endif
+				endif
+				Player.Speed=Player.XVelocity
+			endif
+			break
+		endswitch
+		TempValue3=Player.YPos
+		TempValue3>>=16
+		TempValue5=TempValue3
+		TempValue3-=6
+		TempValue5+=6
+		TempValue2=Player.XPos
+		TempValue2>>=16
+		if Player.XVelocity>0
+			TempValue2+=8
+		else
+			TempValue2-=8
+		endif
+		TempValue4=TempValue2
+		TempValue7=0
+		Get16x16TileInfo(TempValue0,TempValue2,TempValue3,6)
+		switch TempValue0
+		case 3
+			TempValue7=1
+			break
+		case 5
+			TempValue7=2
+			break
+		case 7
+			TempValue7=1
+			break
+		endswitch
+		Get16x16TileInfo(TempValue0,TempValue4,TempValue5,6)
+		switch TempValue0
+		case 3
+			TempValue7=1
+			break
+		case 5
+			TempValue7=2
+			break
+		case 7
+			TempValue7=1
+			break
+		endswitch
+		switch TempValue7
+		case 1
+			if Player.XVelocity>0
+				Player.XVelocity=-327680
+			else
+				Player.XVelocity=327680
+			endif
+			Player.Speed=Player.XVelocity
+			if Warp.Count==false
+				PlayStageSfx(1,0)
+			endif
+			break
+		case 2
+			if Player.XVelocity>0
+				Player.XVelocity=-262144
+			else
+				Player.XVelocity=262144
+			endif
+			Player.Speed=Player.XVelocity
+			if Warp.Count==false
+				PlayStageSfx(6,0)
+			endif
+	#platform: Use_Haptics
+				HapticEffect(11,0,0,0)
+	#endplatform
+			break
+		endswitch
+		break
+	case 14
+		TempValue2=Player.XPos
+		TempValue2>>=16
+		TempValue4=TempValue2
+		TempValue2-=8
+		TempValue4+=8
+		TempValue3=Player.YPos
+		TempValue3>>=16
+		if Player.YVelocity>=0
+			TempValue3+=Player.CollisionBottom
+			TempValue3-=2
+		else
+			TempValue3+=Player.CollisionTop
+			TempValue3+=2
+		endif
+		TempValue5=TempValue3
+		TempValue7=0
+		Get16x16TileInfo(TempValue0,TempValue2,TempValue3,6)
+		switch TempValue0
+		case 1
+			TempValue7=1
+			break
+		case 3
+			TempValue7=3
+			Get16x16TileInfo(TempValue6,TempValue2,TempValue3,1)
+			break
+		case 5
+			TempValue7=2
+			break
+		endswitch
+		Get16x16TileInfo(TempValue0,TempValue4,TempValue5,6)
+		switch TempValue0
+		case 1
+			TempValue7=1
+			break
+		case 3
+			TempValue7=3
+			Get16x16TileInfo(TempValue6,TempValue4,TempValue5,1)
+			break
+		case 5
+			TempValue7=2
+			break
+		endswitch
+		switch TempValue7
+		case 1
+			if Player.YVelocity>=0
+				Player.Gravity=1
+				if Warp.Count==false
+					PlayStageSfx(1,0)
+				endif
+	#platform: Use_Haptics
+				HapticEffect(11,0,0,0)
+	#endplatform
+				if Player.State==PlayerObject_HandleTailsFlight
+					Player.YVelocity=-262144
+				else
+					Player.YVelocity=-458752
+				endif
+				if Player.State==PlayerObject_Knockback
+					Player.State=PlayerObject_HandleAir
+					Player.Timer=0
+				endif
+			else
+				if Player.Gravity==1
+					Player.YVelocity=262144
+					if Warp.Count==false
+						PlayStageSfx(1,0)
+					endif
+				endif
+			endif
+			break
+		case 2
+			if Player.Gravity==1
+				if Warp.Count==false
+					PlayStageSfx(6,0)
+				endif
+	#platform: Use_Haptics
+				HapticEffect(11,0,0,0)
+	#endplatform
+				if Player.YVelocity>=0
+					Player.YVelocity=-262144
+				else
+					Player.YVelocity=262144
+				endif
+			endif
+			break
+		case 3
+			if Player.Gravity==1
+				if Warp.Count==false
+					PlayStageSfx(1,0)
+				endif
+	#platform: Use_Haptics
+				HapticEffect(11,0,0,0)
+	#endplatform
+				if Player.YVelocity>=0
+					if Player.State==PlayerObject_HandleTailsFlight
+						Player.YVelocity=-262144
+					else
+						Player.YVelocity=-458752
+					endif
+				else
+					Player.YVelocity=262144
+				endif
+				if TempValue6==0
+					if Player.XVelocity>0
+						FlipSign(Player.XVelocity)
+						Player.XVelocity*=5
+						Player.XVelocity>>=2
+						if Player.XVelocity>-131072
+							Player.XVelocity=-131072
+						endif
+					else
+						if Player.XVelocity>-131072
+							Player.XVelocity=-131072
+						endif
+					endif
+				else
+					if Player.XVelocity<0
+						FlipSign(Player.XVelocity)
+						Player.XVelocity*=5
+						Player.XVelocity>>=2
+						if Player.XVelocity<131072
+							Player.XVelocity=131072
+						endif
+					else
+						if Player.XVelocity<131072
+							Player.XVelocity=131072
+						endif
+					endif
+				endif
+				Player.Speed=Player.XVelocity
+			endif
+			break
+		endswitch
+		TempValue3=Player.YPos
+		TempValue3>>=16
+		TempValue5=TempValue3
+		TempValue3-=6
+		TempValue5+=6
+		TempValue2=Player.XPos
+		TempValue2>>=16
+		if Player.XVelocity>0
+			TempValue2+=8
+		else
+			TempValue2-=8
+		endif
+		TempValue4=TempValue2
+		TempValue7=0
+		Get16x16TileInfo(TempValue0,TempValue2,TempValue3,6)
+		switch TempValue0
+		case 3
+			TempValue7=1
+			break
+		case 5
+			TempValue7=2
+			break
+		case 7
+			TempValue7=1
+			break
+		endswitch
+		Get16x16TileInfo(TempValue0,TempValue4,TempValue5,6)
+		switch TempValue0
+		case 3
+			TempValue7=1
+			break
+		case 5
+			TempValue7=2
+			break
+		case 7
+			TempValue7=1
+			break
+		endswitch
+		switch TempValue7
+		case 1
+			if Player.XVelocity>0
+				Player.XVelocity=-327680
+			else
+				Player.XVelocity=327680
+			endif
+			Player.Speed=Player.XVelocity
+			if Warp.Count==false
+				PlayStageSfx(1,0)
+			endif
+			break
+		case 2
+			if Player.XVelocity>0
+				Player.XVelocity=-262144
+			else
+				Player.XVelocity=262144
+			endif
+			Player.Speed=Player.XVelocity
+			if Warp.Count==false
+				PlayStageSfx(6,0)
+			endif
+	#platform: Use_Haptics
+				HapticEffect(11,0,0,0)
+	#endplatform
+			break
+		endswitch
+		break
+	endswitch
+endsub
+
+
+function R3Setup_TileCollision
+	Get16x16TileInfo(TempValue0,TempValue2,TempValue3,6)
+	Get16x16TileInfo(TempValue6,TempValue2,TempValue3,1)
+	CheckResult=0
+
+	switch TempValue0
+	case 1
+		CallFunction(R3Setup_BumpVertical)
+		break
+		
+	case 3
+		TempValue4=-1792
+		TempValue5=TempValue2
+		TempValue5&=15
+		if TempValue5>=8
+			if TempValue6==0
+				CallFunction(R3Setup_BumpVertical)
+			else
+				CallFunction(R3Setup_BumpPosAngle)
+				if Warp.Count==false
+					PlayStageSfx(1,0)
+				endif
+			endif
+		else
+			if TempValue6==0
+				CallFunction(R3Setup_BumpPosAngle)
+				if Warp.Count==false
+					PlayStageSfx(1,0)
+				endif
+			else
+				CallFunction(R3Setup_BumpVertical)
+			endif
+		endif
+		break
+		
+	case 5
+		TempValue4=-896
+		CallFunction(R3Setup_BumpPosAngle)
+		if Warp.Count==false
+			PlayStageSfx(6,0)
+		endif
+		break
+		
+	case 7
+		CallFunction(R3Setup_BumpHorizontal)
+		break
+		
+	case 9
+	case 11
+	case 13
+		CallFunction(R3Setup_BumpSlope)
+		break
+		
+	case 15
+		TempValue4=TempValue2
+		TempValue4&=15
+		if TempValue4>=8
+			if TempValue6==0
+				CallFunction(R3Setup_BumpVelAngle)
+			else
+				CallFunction(R3Setup_BumpVertical)
+			endif
+		else
+			if TempValue6==0
+				CallFunction(R3Setup_BumpVelAngle)
+			else
+				CallFunction(R3Setup_BumpHorizontal)
+			endif
+		endif
+		break
+		
+	case 17
+		TempValue4=TempValue2
+		TempValue4&=15
+		if TempValue4>=8
+			if TempValue6==0
+				CallFunction(R3Setup_BumpHorizontal)
+			else
+				CallFunction(R3Setup_BumpVertical)
+			endif
+		else
+			if TempValue6==0
+				CallFunction(R3Setup_BumpVertical)
+			else
+				CallFunction(R3Setup_BumpHorizontal)
+			endif
+		endif
+		break
+		
+	case 19
+		TempValue4=-1792
+		CallFunction(R3Setup_BumpPosAngle)
+		if Warp.Count==false
+			PlayStageSfx(1,0)
+		endif
+		break
+	endswitch
+	
+	if CheckResult==1
+		if Player.State==PlayerObject_Knockback
+			Player.State=PlayerObject_HandleAir
+		endif
+		Player.Timer=0
+		Player.Gravity=1
+	endif
+endfunction
+
+
+function R3Setup_BumpHorizontal
+	if Player.XVelocity>=0
+		Player.XVelocity=-458752
+	else
+		Player.XVelocity=458752
+	endif
+	Player.Speed=Player.XVelocity
+	
+#platform: Use_Haptics
+	HapticEffect(11,0,0,0)
+#endplatform
+	if Warp.Count==false
+		PlayStageSfx(1,0)
+	endif
+	CheckResult=1
+endfunction
+
+
+function R3Setup_BumpVertical
+	if Player.YVelocity>=0
+		if Player.State==PlayerObject_HandleTailsFlight
+			Player.YVelocity=-262144
+		else
+			Player.YVelocity=-458752
+		endif
+	else
+		Player.YVelocity=458752
+	endif
+	
+#platform: Use_Haptics
+	HapticEffect(11,0,0,0)
+#endplatform
+	if Warp.Count==false
+		PlayStageSfx(1,0)
+	endif
+	CheckResult=1
+endfunction
+
+
+function R3Setup_BumpSlope
+	TempValue0-=9
+	TempValue0*=8
+	TempValue2&=15
+	if TempValue6==0
+		FlipSign(TempValue2)
+		TempValue2+=15
+	endif
+	TempValue0+=TempValue2
+	TempValue0/=3
+	TempValue0+=1
+	
+	TempValue3&=15
+	if TempValue3>=TempValue0
+		CallFunction(R3Setup_BumpVelAngle)
+	endif
+endfunction
+
+
+function R3Setup_BumpVelAngle
+	ATan2(TempValue0,Player.XVelocity,Player.YVelocity)
+	TempValue0-=128
+	FlipSign(TempValue0)
+	TempValue0-=32
+	if TempValue6!=0
+		TempValue0+=64
+	endif
+	TempValue0&=255
+	
+	Cos256(TempValue2,TempValue0)
+	TempValue2*=-1792
+	Player.XVelocity=TempValue2
+	Player.Speed=Player.XVelocity
+	Sin256(TempValue2,TempValue0)
+	TempValue2*=-1792
+	Player.YVelocity=TempValue2
+	
+#platform: Use_Haptics
+	HapticEffect(11,0,0,0)
+#endplatform
+	if Warp.Count==false
+		PlayStageSfx(1,0)
+	endif
+	CheckResult=1
+endfunction
+
+
+function R3Setup_BumpPosAngle
+	TempValue2&=4294967280
+	TempValue2+=8
+	TempValue3&=4294967280
+	TempValue3+=8
+	TempValue2-=Player.iXPos
+	TempValue3-=Player.iYPos
+	ATan2(TempValue0,TempValue2,TempValue3)
+	
+	Cos256(TempValue2,TempValue0)
+	TempValue2*=TempValue4
+	Player.XVelocity=TempValue2
+	Player.Speed=Player.XVelocity
+	Sin256(TempValue2,TempValue0)
+	TempValue2*=TempValue4
+	Player.YVelocity=TempValue2
+	
+#platform: Use_Haptics
+	HapticEffect(11,0,0,0)
+#endplatform
+	CheckResult=1
+endfunction
+
+
+sub ObjectDraw
+	Object.Value0++
+	if Object.Value0>3
+		TileLayer[0].DeformationOffsetW++
+		TileLayer[1].DeformationOffset++
+		Object.Value0=0
+	endif
+endsub
+
+
+sub ObjectStartup
+	Object[29].Type=TypeName[R3Setup]
+	Object[29].Priority=1
+	Object[29].DrawOrder=0
+	SetLayerDeformation(2,128,6,0,0,0)
+	SetLayerDeformation(1,64,4,0,0,0)
+	Stage.WaterLevel=1472
+	if Object[24].PropertyValue==1
+		RotatingDrum_Timer=1
+	else
+		RotatingDrum_Timer=0
+	endif
+endsub
+
+sub RSDK
+	LoadSpriteSheet("Global/Display.gif")
+	SetEditorIcon(Icon0,SingleIcon,-16,-16,32,32,1,143)
+endsub

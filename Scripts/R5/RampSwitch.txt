@@ -1,0 +1,38 @@
+//------------Sonic CD Tube Switch Script-------------//
+//--------Scripted by Christian Whitehead 'The Taxman'--------//
+//-------Unpacked By Rubberduckycooly's Script Unpacker-------//
+
+//-------Aliases-------//
+#alias 143: TYPE_RAMPSWITCH
+#alias Player.Value2:Player.CustomAnimSpeed
+#alias Player.Value6:Player.MinRollSpeed
+
+
+sub ObjectPlayerInteraction
+	PlayerObjectCollision(C_TOUCH,-8,-8,8,8)
+	if CheckResult==1
+		switch Object.PropertyValue
+		case 0
+			if Player.Animation==ANI_JUMPING
+				if Player.Speed>1390000
+					if Object.Value0==0
+						if Player.Timer==0
+							Player.Gravity=1
+							Player.Speed=926389
+							Player.XVelocity=926389
+						endif
+					endif
+				endif
+			endif
+			break
+		endswitch
+		Object.Value0=1
+	else
+		Object.Value0=0
+	endif
+endsub
+
+sub RSDK
+	LoadSpriteSheet("Global/Display.gif")
+	SetEditorIcon(Icon0,SingleIcon,-16,-16,32,32,1,143)
+endsub
