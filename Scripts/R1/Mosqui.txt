@@ -208,11 +208,7 @@ sub ObjectPlayerInteraction
 	if Object.State<5
 		PlayerObjectCollision(C_TOUCH,-15,-10,15,10)
 		if CheckResult==1
-			if Object.Direction==FACING_LEFT
-				CallFunction(PlayerObject_BadnikBreak)
-			else
-				CallFunction(PlayerObject_BadnikBreakFlip)
-			endif
+			CallFunction(PlayerObject_BadnikBreak)
 		endif
 	endif
 endsub

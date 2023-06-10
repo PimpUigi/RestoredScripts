@@ -164,11 +164,7 @@ sub ObjectPlayerInteraction
 	if Object.PropertyValue<2
 		PlayerObjectCollision(C_TOUCH,-8,-6,8,22)
 		if CheckResult==1
-			if Object.Direction==FACING_LEFT
 				CallFunction(PlayerObject_BadnikBreak)
-			else
-				CallFunction(PlayerObject_BadnikBreakFlip)
-			endif
 		endif
 		if Object.PropertyValue==0
 			if Object.Type==TypeName[Minomusi]
@@ -192,11 +188,7 @@ sub ObjectPlayerInteraction
 	else
 		PlayerObjectCollision(C_TOUCH,-8,-6,8,22)
 		if CheckResult==1
-			if Object.Direction==FACING_LEFT
 				CallFunction(PlayerObject_BadnikBreak)
-			else
-				CallFunction(PlayerObject_BadnikBreakFlip)
-			endif
 		endif
 		if Object.PropertyValue==0
 			if Object.Type==TypeName[Minomusi]

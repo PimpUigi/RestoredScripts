@@ -354,11 +354,7 @@ sub ObjectPlayerInteraction
 	case 7
 		PlayerObjectCollision(C_TOUCH,-14,-10,14,10)
 		if CheckResult==1
-			if Object.Direction==FACING_LEFT
-				CallFunction(PlayerObject_BadnikBreak)
-			else
-				CallFunction(PlayerObject_BadnikBreakFlip)
-			endif
+			CallFunction(PlayerObject_BadnikBreak)
 		endif
 		break
 	case 3
@@ -379,11 +375,7 @@ sub ObjectPlayerInteraction
 					Player.YVelocity>>=2
 				endif
 			else
-				if Object.Direction==FACING_LEFT
-					CallFunction(PlayerObject_BadnikBreak)
-				else
-					CallFunction(PlayerObject_BadnikBreakFlip)
-				endif
+				CallFunction(PlayerObject_BadnikBreak)
 			endif
 		endif
 		break
@@ -409,11 +401,7 @@ sub ObjectPlayerInteraction
 					Player.Animation=ANI_JUMPING
 				endif
 			else
-				if Object.Direction==FACING_LEFT
-					CallFunction(PlayerObject_BadnikBreak)
-				else
-					CallFunction(PlayerObject_BadnikBreakFlip)
-				endif
+				CallFunction(PlayerObject_BadnikBreak)
 			endif
 		endif
 		break

@@ -707,7 +707,11 @@ function EggMobile_Function75
 		Object.Value2=40960
 		Object[+1].Value7=Object[+3].YPos
 		Object[+1].Value7+=2097152
-		Object[+2].State=0
+		if SaveRAM[303] == 0
+			Object[+2].State=0
+		else
+			Object[+2].State=1
+		endif
 		break
 	case 5
 		Object.State=EggMobile_Function52
@@ -874,7 +878,11 @@ function EggMobile_Function76
 		Object.Value2=49152
 		Object[+1].Value7=Object[+3].YPos
 		Object[+1].Value7+=2097152
-		Object[+2].State=0
+		if SaveRAM[303] == 0
+			Object[+2].State=0
+		else
+			//Nothing
+		endif
 		TempValue0=4
 		ArrayPos0=Object.EntityNo
 		ArrayPos0-=4
@@ -909,6 +917,11 @@ function EggMobile_Function76
 			Object[+1].Value7=Object[+3].XPos
 			Object[+1].Value7+=1310720
 			Object.Value6=-16
+		endif
+		if SaveRAM[303] == 0
+			//Nothing
+		else
+			Object[+2].State=0
 		endif
 		Object[+2].Value7=1
 		Object[+2].AnimationSpeed=0

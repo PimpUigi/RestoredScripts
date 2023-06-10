@@ -145,11 +145,7 @@ sub ObjectPlayerInteraction
 					Object.Value6=0
 					PlayerObjectCollision(C_TOUCH,-12,-12,20,12)
 					if CheckResult==1
-						if Object.Direction==FACING_LEFT
-							CallFunction(PlayerObject_BadnikBreak)
-						else
-							CallFunction(PlayerObject_BadnikBreakFlip)
-						endif
+						CallFunction(PlayerObject_BadnikBreak)
 					endif
 				endif
 			else
@@ -181,11 +177,7 @@ sub ObjectPlayerInteraction
 					Object.Value6=0
 					PlayerObjectCollision(C_TOUCH,-20,-12,12,12)
 					if CheckResult==1
-						if Object.Direction==FACING_LEFT
-							CallFunction(PlayerObject_BadnikBreak)
-						else
-							CallFunction(PlayerObject_BadnikBreakFlip)
-						endif
+						CallFunction(PlayerObject_BadnikBreak)
 					endif
 				endif
 			endif

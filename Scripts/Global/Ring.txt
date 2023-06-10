@@ -7,6 +7,17 @@
 
 #alias Player.Value0:Player.Rings
 
+sub ObjectMain
+	switch Stage.ListPos
+		case 68
+		case 69
+			if SaveRAM[303] == 1
+				Object.Type = TypeName[BlankObject]
+			endif
+		break
+	endswitch
+endsub
+
 sub ObjectPlayerInteraction
 	if Player.State!=PlayerObject_Knockback
 		if Player.CollisionPlane==Object.PropertyValue
@@ -68,6 +79,16 @@ endsub
 
 sub ObjectStartup
 	LoadSpriteSheet("Global/Items.gif")
+
+	SpriteFrame(-8,-8,16,16,1,1)
+	SpriteFrame(-8,-8,16,16,1,18)
+	SpriteFrame(-8,-8,16,16,1,35)
+	SpriteFrame(-8,-8,16,16,1,52)
+	SpriteFrame(-8,-8,16,16,1,69)
+	SpriteFrame(-8,-8,16,16,1,86)
+	SpriteFrame(-8,-8,16,16,1,103)
+	SpriteFrame(-8,-8,16,16,1,120)
+
 	ArrayPos0=32
 	while ArrayPos0<1056
 		if Object[ArrayPos0].Type==TypeName[Ring]
@@ -79,14 +100,7 @@ sub ObjectStartup
 		endif
 		ArrayPos0++
 	loop
-	SpriteFrame(-8,-8,16,16,1,1)
-	SpriteFrame(-8,-8,16,16,1,18)
-	SpriteFrame(-8,-8,16,16,1,35)
-	SpriteFrame(-8,-8,16,16,1,52)
-	SpriteFrame(-8,-8,16,16,1,69)
-	SpriteFrame(-8,-8,16,16,1,86)
-	SpriteFrame(-8,-8,16,16,1,103)
-	SpriteFrame(-8,-8,16,16,1,120)
+
 endsub
 
 sub RSDK

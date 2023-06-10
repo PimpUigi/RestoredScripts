@@ -45,11 +45,7 @@ sub ObjectPlayerInteraction
 	if Object.State<3
 		PlayerObjectCollision(C_TOUCH,-16,-14,16,14)
 		if CheckResult==1
-			if Object.Direction==FACING_LEFT
-				CallFunction(PlayerObject_BadnikBreak)
-			else
-				CallFunction(PlayerObject_BadnikBreakFlip)
-			endif
+			CallFunction(PlayerObject_BadnikBreak)
 		endif
 		if Object.Type==TypeName[MechaBu]
 			if Object.PropertyValue==0

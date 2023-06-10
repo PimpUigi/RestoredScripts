@@ -1,0 +1,667 @@
+//------------Sonic CD Help Menu Script-------------//
+//--------Scripted by Christian Whitehead 'The Taxman'--------//
+//-------Unpacked By Rubberduckycooly's Script Unpacker-------//
+
+//-------Aliases-------//
+#alias 7: TYPE_NEWSTAGESELECTMENU
+
+// Function declarations
+#function NewStageSelectMenu_Function0
+
+function NewStageSelectMenu_Function0
+	SaveRAM[269]=0
+	SaveRAM[270]=Object.Value3
+endfunction
+
+function NewStageSelectMenu_Function1
+	SaveRAM[269]=1
+	SaveRAM[273]=Object.Value3
+endfunction
+
+function NewStageSelectMenu_Function2
+	SaveRAM[269]=2
+	SaveRAM[271]=Object.Value3
+endfunction
+
+
+sub ObjectMain
+	switch Object.State
+	case 0
+		LoadPalette("TimeAttack.act",0,0,0,256)
+		LoadPalette("TimeAttack.act",1,0,0,256)
+		TempValue0=256
+		TempValue0-=Screen.CenterX
+		Screen.XOffset=TempValue0
+		Object.Value3=0
+		ReadSaveRAM()
+		SaveRAM[269]=0
+		SaveRAM[270]=0
+		SaveRAM[271]=0
+		SaveRAM[272]=0
+		SaveRAM[273]=0
+		CallFunction(NewStageSelectMenu_Function0)
+		PlayMusic(1)
+		Object.Value0=512
+		Object.State++
+		SetScreenFade(0,0,0,255)
+		break
+	case 1
+		if Object.Value0>0
+			Object.Value0-=8
+		else
+			Object.State++
+		endif
+		SetScreenFade(0,0,0,Object.Value0)
+		break
+	case 2
+		if KeyPress.Left==1
+			if SaveRAM[272]==1
+				PlaySfx(20,0)
+				SaveRAM[272]=0
+			endif
+		endif
+		if KeyPress.Right==1
+			if SaveRAM[272]==0
+				PlaySfx(21,0)
+				SaveRAM[272]=1
+			endif
+		endif		
+		
+		if KeyPress.Down==1
+			if SaveRAM[269]==0
+				if Object.Value3<14
+					PlaySfx(23,0)
+					Object.Value3+=1
+					Object.State=3
+				else
+					if Object.Value3==14
+						PlaySfx(23,0)
+						Object.Value3=0
+						Object.State=3
+					endif
+				endif
+			else
+				if SaveRAM[269]==1
+					if Object.Value3<2
+						PlaySfx(23,0)
+						Object.Value3+=1
+						Object.State=6
+					else
+						if Object.Value3==2
+							PlaySfx(23,0)
+							Object.Value3=0
+							Object.State=6
+						endif
+					endif
+				else				
+					if SaveRAM[273]==2
+						if Object.Value3<3
+							PlaySfx(23,0)
+							Object.Value3+=1
+							Object.State=4
+						else
+							if Object.Value3==3
+								PlaySfx(23,0)
+								Object.Value3=2
+								Object.State=4
+							endif
+						endif
+					else
+						if Object.Value3<3
+							PlaySfx(23,0)
+							Object.Value3+=1
+							Object.State=4
+						else
+							if Object.Value3==3
+								PlaySfx(23,0)
+								Object.Value3=0
+								Object.State=4
+							endif
+						endif
+					endif
+				endif
+			endif
+		endif
+		if KeyPress.Up==1
+			if SaveRAM[269]==0
+				if Object.Value3>0
+					PlaySfx(23,0)
+					Object.Value3-=1
+					Object.State=3
+				else
+					if Object.Value3==0
+						PlaySfx(23,0)
+						Object.Value3=14
+						Object.State=3
+					endif
+				endif
+			else
+				if SaveRAM[269]==1
+					if Object.Value3>0
+						PlaySfx(23,0)
+						Object.Value3-=1
+						Object.State=6
+					else
+						if Object.Value3==0
+							PlaySfx(23,0)
+							Object.Value3=2
+							Object.State=6
+						endif
+					endif
+				else
+					if SaveRAM[273]==2
+						if Object.Value3>2
+							PlaySfx(23,0)
+							Object.Value3-=1
+							Object.State=4
+						else
+							if Object.Value3==2
+								PlaySfx(23,0)
+								Object.Value3=3
+								Object.State=4
+							endif
+						endif
+					else
+						if Object.Value3>0
+							PlaySfx(23,0)
+							Object.Value3-=1
+							Object.State=4
+						else
+							if Object.Value3==0
+								PlaySfx(23,0)
+								Object.Value3=3
+								Object.State=4
+							endif
+						endif
+					endif
+				endif
+			endif
+		endif
+		if KeyPress.ButtonA==1
+			if SaveRAM[269]==0
+				if SaveRAM[270]==14
+					PlaySfx(26,0)
+					Object.Value0=0
+					Object.State=5
+					Stage.ListPos=1
+				else
+					if SaveRAM[270]>6
+						PlaySfx(19,0)
+						Stage.ActiveList=SPECIAL_STAGE
+						Stage.PlayerListPos=SaveRAM[272]
+						Stage.ListPos=SaveRAM[270]
+						Stage.ListPos-=7
+						Object.Value0=0
+						Object.State=5
+						StopMusic()
+					else
+						PlaySfx(27,0)
+						Object.Value3=0
+						Object.State=6
+					endif
+				endif
+			else
+				if SaveRAM[269]==1
+					PlaySfx(27,0)
+					if SaveRAM[273]==2
+						Object.Value3=2
+						Object.State=4
+					else
+						Object.Value3=0
+						Object.State=4
+					endif
+				else
+					PlaySfx(18,0)
+					Stage.ActiveList=REGULAR_STAGE
+					Stage.PlayerListPos=SaveRAM[272]
+					Stage.ListPos=SaveRAM[270]
+					Stage.ListPos*=10
+					TempValue6=SaveRAM[273]
+					TempValue6*=4
+					Stage.ListPos+=TempValue6
+					if SaveRAM[273]==2
+						if SaveRAM[271]==2
+							TempValue6=0
+						else
+							TempValue6=1
+						endif
+					else
+						TempValue6=SaveRAM[271]
+					endif
+					Stage.ListPos+=TempValue6
+					Object.Value0=0
+					Object.State=5
+					StopMusic()
+				endif
+			endif
+		endif
+		if KeyPress.ButtonB==1
+			if SaveRAM[269]==2
+				PlaySfx(27,0)
+				Object.Value3=SaveRAM[273]
+				Object.State=6
+			endif
+			if SaveRAM[269]==1
+				PlaySfx(27,0)
+				Object.Value3=SaveRAM[270]
+				Object.State=3
+			endif
+		endif
+		break
+	case 3
+			CallFunction(NewStageSelectMenu_Function0)
+			Object.State=2
+		break
+	case 4
+			CallFunction(NewStageSelectMenu_Function2)
+			Object.State=2
+		break
+	case 6
+			CallFunction(NewStageSelectMenu_Function1)
+			Object.State=2
+		break
+	case 5
+		if Object.Value0<348
+			Object.Value0+=8
+		else
+			Engine.State=6
+			LoadStage()
+		endif
+		SetScreenFade(0,0,0,Object.Value0)
+		break
+
+	endswitch
+endsub
+
+
+sub ObjectDraw
+	Object.Value4--
+	if Object.Value4<-31
+		Object.Value4+=32
+	endif
+	TempValue1=Object.Value4
+	TempValue1>>=1
+	while TempValue1<Screen.YSize
+		TempValue0=Object.Value4
+		TempValue0>>=1
+		while TempValue0<Screen.XSize
+			DrawSpriteScreenXY(0,TempValue0,TempValue1)
+			TempValue0+=128
+		loop
+		TempValue1+=128
+	loop
+	TempValue2=Screen.XSize
+	TempValue2-=320
+	TempValue2/=2
+	TempValue3=Screen.YSize
+	TempValue3-=240
+	TempValue3/=2
+	DrawSpriteScreenXY(1,TempValue2,TempValue3)
+	
+	switch SaveRAM[269]
+	case 2
+		switch SaveRAM[271]
+			case 0
+				TempValue4=TempValue2
+				TempValue4+=254
+				TempValue5=TempValue3
+				TempValue5+=169
+				DrawSpriteScreenXY(30,TempValue4,TempValue5)
+				break
+			case 1
+				TempValue4=TempValue2
+				TempValue4+=254
+				TempValue5=TempValue3
+				TempValue5+=187
+				DrawSpriteScreenXY(31,TempValue4,TempValue5)
+				break
+			case 2
+				TempValue4=TempValue2
+				TempValue4+=254
+				TempValue5=TempValue3
+				TempValue5+=205
+				DrawSpriteScreenXY(32,TempValue4,TempValue5)
+				break
+			case 3
+				TempValue4=TempValue2
+				TempValue4+=254
+				TempValue5=TempValue3
+				TempValue5+=223
+				DrawSpriteScreenXY(33,TempValue4,TempValue5)
+				break
+		endswitch
+	case 1
+	case 0
+		switch SaveRAM[270]
+			case 0
+				TempValue4=TempValue2
+				TempValue4+=1
+				TempValue5=TempValue3
+				TempValue5+=30
+				DrawSpriteScreenXY(2,TempValue4,TempValue5)
+				TempValue4=TempValue2
+				TempValue4+=189
+				TempValue5=TempValue3
+				TempValue5+=22
+				DrawSpriteScreenXY(16,TempValue4,TempValue5)
+			break
+			case 1
+				TempValue4=TempValue2
+				TempValue4+=1
+				TempValue5=TempValue3
+				TempValue5+=42
+				DrawSpriteScreenXY(3,TempValue4,TempValue5)
+				TempValue4=TempValue2
+				TempValue4+=189
+				TempValue5=TempValue3
+				TempValue5+=22
+				DrawSpriteScreenXY(17,TempValue4,TempValue5)
+			break
+			case 2
+				TempValue4=TempValue2
+				TempValue4+=1
+				TempValue5=TempValue3
+				TempValue5+=54
+				DrawSpriteScreenXY(4,TempValue4,TempValue5)
+				TempValue4=TempValue2
+				TempValue4+=189
+				TempValue5=TempValue3
+				TempValue5+=22
+				DrawSpriteScreenXY(18,TempValue4,TempValue5)
+			break
+			case 3
+				TempValue4=TempValue2
+				TempValue4+=1
+				TempValue5=TempValue3
+				TempValue5+=66
+				DrawSpriteScreenXY(5,TempValue4,TempValue5)
+				TempValue4=TempValue2
+				TempValue4+=189
+				TempValue5=TempValue3
+				TempValue5+=22
+				DrawSpriteScreenXY(19,TempValue4,TempValue5)
+			break
+			case 4
+				TempValue4=TempValue2
+				TempValue4+=1
+				TempValue5=TempValue3
+				TempValue5+=78
+				DrawSpriteScreenXY(6,TempValue4,TempValue5)
+				TempValue4=TempValue2
+				TempValue4+=189
+				TempValue5=TempValue3
+				TempValue5+=22
+				DrawSpriteScreenXY(20,TempValue4,TempValue5)
+			break
+			case 5
+				TempValue4=TempValue2
+				TempValue4+=1
+				TempValue5=TempValue3
+				TempValue5+=90
+				DrawSpriteScreenXY(7,TempValue4,TempValue5)
+				TempValue4=TempValue2
+				TempValue4+=189
+				TempValue5=TempValue3
+				TempValue5+=22
+				DrawSpriteScreenXY(21,TempValue4,TempValue5)
+			break
+			case 6
+				TempValue4=TempValue2
+				TempValue4+=1
+				TempValue5=TempValue3
+				TempValue5+=102
+				DrawSpriteScreenXY(8,TempValue4,TempValue5)
+				TempValue4=TempValue2
+				TempValue4+=189
+				TempValue5=TempValue3
+				TempValue5+=22
+				DrawSpriteScreenXY(22,TempValue4,TempValue5)
+			break
+			case 7
+				TempValue4=TempValue2
+				TempValue4+=1
+				TempValue5=TempValue3
+				TempValue5+=114
+				DrawSpriteScreenXY(9,TempValue4,TempValue5)
+				TempValue4=TempValue2
+				TempValue4+=189
+				TempValue5=TempValue3
+				TempValue5+=22
+				DrawSpriteScreenXY(23,TempValue4,TempValue5)
+			break
+			case 8
+				TempValue4=TempValue2
+				TempValue4+=1
+				TempValue5=TempValue3
+				TempValue5+=126
+				DrawSpriteScreenXY(10,TempValue4,TempValue5)
+				TempValue4=TempValue2
+				TempValue4+=189
+				TempValue5=TempValue3
+				TempValue5+=22
+				DrawSpriteScreenXY(24,TempValue4,TempValue5)
+			break
+			case 9
+				TempValue4=TempValue2
+				TempValue4+=1
+				TempValue5=TempValue3
+				TempValue5+=138
+				DrawSpriteScreenXY(11,TempValue4,TempValue5)
+				TempValue4=TempValue2
+				TempValue4+=189
+				TempValue5=TempValue3
+				TempValue5+=22
+				DrawSpriteScreenXY(25,TempValue4,TempValue5)
+			break
+			case 10
+				TempValue4=TempValue2
+				TempValue4+=1
+				TempValue5=TempValue3
+				TempValue5+=150
+				DrawSpriteScreenXY(12,TempValue4,TempValue5)
+				TempValue4=TempValue2
+				TempValue4+=189
+				TempValue5=TempValue3
+				TempValue5+=22
+				DrawSpriteScreenXY(26,TempValue4,TempValue5)
+			break
+			case 11
+				TempValue4=TempValue2
+				TempValue4+=1
+				TempValue5=TempValue3
+				TempValue5+=162
+				DrawSpriteScreenXY(13,TempValue4,TempValue5)
+				TempValue4=TempValue2
+				TempValue4+=189
+				TempValue5=TempValue3
+				TempValue5+=22
+				DrawSpriteScreenXY(27,TempValue4,TempValue5)
+			break
+			case 12
+				TempValue4=TempValue2
+				TempValue4+=1
+				TempValue5=TempValue3
+				TempValue5+=174
+				DrawSpriteScreenXY(14,TempValue4,TempValue5)
+				TempValue4=TempValue2
+				TempValue4+=189
+				TempValue5=TempValue3
+				TempValue5+=22
+				DrawSpriteScreenXY(28,TempValue4,TempValue5)
+			break
+			case 13
+				TempValue4=TempValue2
+				TempValue4+=1
+				TempValue5=TempValue3
+				TempValue5+=186
+				DrawSpriteScreenXY(15,TempValue4,TempValue5)
+				TempValue4=TempValue2
+				TempValue4+=189
+				TempValue5=TempValue3
+				TempValue5+=22
+				DrawSpriteScreenXY(29,TempValue4,TempValue5)
+			break
+			case 14
+				TempValue4=TempValue2
+				TempValue4+=1
+				TempValue5=TempValue3
+				TempValue5+=228
+				DrawSpriteScreenXY(40,TempValue4,TempValue5)
+				TempValue4=TempValue2
+				TempValue4+=189
+				TempValue5=TempValue3
+				TempValue5+=22
+				DrawSpriteScreenXY(41,TempValue4,TempValue5)
+			break
+		endswitch
+	endswitch
+
+	if SaveRAM[270]<7
+		TempValue4=TempValue2
+		TempValue4+=270
+		TempValue5=TempValue3
+		TempValue5+=124
+		DrawSpriteScreenXY(39,TempValue4,TempValue5)
+	
+		if SaveRAM[269]>0
+			switch SaveRAM[273]
+				case 0
+					TempValue4=TempValue2
+					TempValue4+=270
+					TempValue5=TempValue3
+					TempValue5+=124
+					DrawSpriteScreenXY(36,TempValue4,TempValue5)
+					break
+				case 1
+					TempValue4=TempValue2
+					TempValue4+=270
+					TempValue5=TempValue3
+					TempValue5+=138
+					DrawSpriteScreenXY(37,TempValue4,TempValue5)
+					break
+				case 2
+					TempValue4=TempValue2
+					TempValue4+=270
+					TempValue5=TempValue3
+					TempValue5+=152
+					DrawSpriteScreenXY(38,TempValue4,TempValue5)
+					break
+			endswitch
+		endif
+	endif
+	
+	switch SaveRAM[272]
+		case 0
+			TempValue4=TempValue2
+			TempValue4+=200
+			TempValue5=TempValue3
+			TempValue5+=180
+			DrawSpriteScreenXY(34,TempValue4,TempValue5)
+			break
+		case 1
+			TempValue4=TempValue2
+			TempValue4+=200
+			TempValue5=TempValue3
+			TempValue5+=180
+			DrawSpriteScreenXY(35,TempValue4,TempValue5)
+			break
+	endswitch
+endsub
+
+
+sub ObjectStartup
+	switch Engine.Language
+		case 0
+			LoadSpriteSheet("NewStageSelect/EN/layout.gif")
+			break
+		case 1
+			LoadSpriteSheet("NewStageSelect/FR/layout.gif")
+			break
+		case 2
+			LoadSpriteSheet("NewStageSelect/EN/layout.gif")
+			break
+		case 3
+			LoadSpriteSheet("NewStageSelect/EN/layout.gif")
+			break
+		case 4
+			LoadSpriteSheet("NewStageSelect/EN/layout.gif")
+			break
+		case 5
+			LoadSpriteSheet("NewStageSelect/EN/layout.gif")
+			break
+	endswitch
+	SpriteFrame(0,0,128,128,320,576)
+	SpriteFrame(0,0,320,240,0,576)
+	SpriteFrame(0,0,117,11,322,708)
+	SpriteFrame(0,0,117,11,322,720)
+	SpriteFrame(0,0,117,11,322,732)
+	SpriteFrame(0,0,117,11,322,744)
+	SpriteFrame(0,0,117,11,322,756)
+	SpriteFrame(0,0,117,11,322,768)
+	SpriteFrame(0,0,117,11,322,780)
+	SpriteFrame(0,0,117,11,322,792)
+	SpriteFrame(0,0,117,11,322,804)
+	SpriteFrame(0,0,117,11,322,816)
+	SpriteFrame(0,0,117,11,322,828)
+	SpriteFrame(0,0,117,11,322,840)
+	SpriteFrame(0,0,117,11,322,852)
+	SpriteFrame(0,0,117,11,322,864)
+	
+	SpriteFrame(0,0,128,144,0,0)
+	SpriteFrame(0,0,128,144,256,0)
+	SpriteFrame(0,0,128,144,384,0)
+	SpriteFrame(0,0,128,144,0,144)
+	SpriteFrame(0,0,128,144,128,144)
+	SpriteFrame(0,0,128,144,256,144)
+	SpriteFrame(0,0,128,144,384,144)
+	SpriteFrame(0,0,128,144,0,288)
+	SpriteFrame(0,0,128,144,128,288)
+	SpriteFrame(0,0,128,144,256,288)
+	SpriteFrame(0,0,128,144,384,288)
+	SpriteFrame(0,0,128,144,0,432)
+	SpriteFrame(0,0,128,144,128,432)
+	SpriteFrame(0,0,128,144,256,432)
+	
+	SpriteFrame(0,0,64,16,254,817)
+	SpriteFrame(0,0,64,16,254,835)
+	SpriteFrame(0,0,64,16,254,853)
+	SpriteFrame(0,0,64,16,254,871)
+
+	SpriteFrame(0,0,40,48,172,817)
+	SpriteFrame(0,0,40,48,213,817)	
+	
+	SpriteFrame(0,0,46,13,442,749)
+	SpriteFrame(0,0,46,13,442,763)
+	SpriteFrame(0,0,46,13,442,777)
+	
+	SpriteFrame(0,0,46,41,442,707)
+	
+	SpriteFrame(0,0,117,11,322,906)
+	SpriteFrame(0,0,128,144,384,432)	
+				
+	if Engine.Language==5
+		Object[59].XPos-=1048576
+		Object[60].XPos-=1048576
+		Object[61].XPos-=1048576
+		Object[62].XPos-=1048576
+		Object[63].XPos-=1048576
+		Object[64].XPos+=5242880
+		Object[59].YPos+=1572864
+		Object[60].YPos+=1572864
+		Object[61].YPos+=1572864
+		Object[62].YPos+=1572864
+		Object[63].YPos+=1572864
+		Object[64].YPos-=3080192
+	endif
+	
+	if Options.Soundtrack==0
+		SetMusicTrack("JP/DAGarden.ogg",1,1)
+	else
+		SetMusicTrack("US/DAGarden.ogg",1,117382)
+	endif
+endsub
+
+sub RSDK
+	LoadSpriteSheet("Global/Display.gif")
+	SetEditorIcon(Icon0,SingleIcon,-16,-16,32,32,1,143)
+endsub

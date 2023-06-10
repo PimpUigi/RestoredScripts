@@ -504,11 +504,7 @@ endsub
 sub ObjectPlayerInteraction
 	PlayerObjectCollision(C_TOUCH,-8,-10,8,8)
 	if CheckResult==1
-		if Object.Direction==FACING_LEFT
-			CallFunction(PlayerObject_BadnikBreak)
-		else
-			CallFunction(PlayerObject_BadnikBreakFlip)
-		endif
+		CallFunction(PlayerObject_BadnikBreak)
 	else
 		TempValue1=Object.XPos
 		TempValue2=Object.YPos
@@ -538,31 +534,19 @@ sub ObjectPlayerInteraction
 			Object.YPos=Object.Value4
 			PlayerObjectCollision(C_TOUCH,-8,-8,8,8)
 			if CheckResult==1
-				if Object.Direction==FACING_LEFT
-					CallFunction(PlayerObject_BadnikBreak)
-				else
-					CallFunction(PlayerObject_BadnikBreakFlip)
-				endif
+				CallFunction(PlayerObject_BadnikBreak)
 			else
 				Object.XPos=Object.Value2
 				Object.YPos=Object.Value5
 				PlayerObjectCollision(C_TOUCH,-8,-8,8,8)
 				if CheckResult==1
-					if Object.Direction==FACING_LEFT
-						CallFunction(PlayerObject_BadnikBreak)
-					else
-						CallFunction(PlayerObject_BadnikBreakFlip)
-					endif
+					CallFunction(PlayerObject_BadnikBreak)
 				else
 					Object.XPos=Object.Value3
 					Object.YPos=Object.Value6
 					PlayerObjectCollision(C_TOUCH,-8,-8,8,8)
 					if CheckResult==1
-						if Object.Direction==FACING_LEFT
-							CallFunction(PlayerObject_BadnikBreak)
-						else
-							CallFunction(PlayerObject_BadnikBreakFlip)
-						endif
+						CallFunction(PlayerObject_BadnikBreak)
 					endif
 				endif
 			endif

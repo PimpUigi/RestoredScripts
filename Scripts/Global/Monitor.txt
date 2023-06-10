@@ -17,6 +17,14 @@ sub ObjectMain
 			endif
 		endif
 	endif
+	switch Stage.ListPos
+		case 68
+		case 69
+			if SaveRAM[303] == 1
+				Object.PropertyValue = 3
+			endif
+		break
+	endswitch
 endsub
 
 
