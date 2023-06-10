@@ -1,0 +1,385 @@
+//------------Sonic CD FadeScreen Script-------------//
+//--------Scripted by Christian Whitehead 'The Taxman'--------//
+//-------Unpacked By Rubberduckycooly's Script Unpacker-------//
+
+//-------Aliases-------//
+#alias 62: TYPE_FADESCREEN
+
+
+sub ObjectMain
+	switch Object.State
+	case 0
+		if Object.Value0<480
+			Object.Value0+=4
+			Music.Volume--
+		else
+			Object.Value0=224
+			if Object.PropertyValue==0
+				Object.State++
+			else
+				Object.State+=2
+			endif
+		endif
+		if Object.PropertyValue==1
+			SetScreenFade(0,0,0,Object.Value0)
+		else
+			SetScreenFade(224,224,224,Object.Value0)
+		endif
+		break
+	case 1
+		if Object.Value0>0
+			Music.Volume--
+			Object.Value0-=16
+		else
+			StopMusic()
+				if Options.GameMode==2
+					TimeAttack.Result=Stage.Seconds
+					TimeAttack.Result*=100
+					TempValue0=Stage.Minutes
+					TempValue0*=6000
+					TimeAttack.Result+=TempValue0
+					TimeAttack.Result+=Stage.MilliSeconds
+					TempValue0=Stage.ListPos
+					TempValue0%=10
+					TempValue0>>=2
+					TempValue1=Stage.ListPos
+					TempValue1/=10
+					TempValue1*=3
+					TempValue0+=TempValue1
+					TempValue0++
+					TempValue1=Stage.Seconds
+					TempValue1*=100
+					TempValue2=Stage.Minutes
+					TempValue2*=6000
+					TempValue1+=TempValue2
+					TempValue1+=Stage.MilliSeconds
+					SetLeaderboard(TempValue0,TempValue1)
+					Stage.ListPos=2
+				else
+				if Options.GameMode==-1
+					ArrayPos0=Options.NoSaveSlot
+					ArrayPos0*=800
+					ArrayPos0+=800
+					TempValue1=Stage.Seconds
+					TempValue1*=100
+					TempValue2=Stage.Minutes
+					TempValue2*=6000
+					TempValue1+=TempValue2
+					TempValue1+=Stage.MilliSeconds
+					SaveRAM[ArrayPos0]+=TempValue1
+					ArrayPos0++
+					TempValue2=SaveRAM[ArrayPos0]
+					SaveRAM[ArrayPos0]++
+					ArrayPos0+=4
+					TempValue2*=3
+					ArrayPos0+=TempValue2
+					SaveRAM[ArrayPos0]=Stage.ListPos
+					ArrayPos0++
+					SaveRAM[ArrayPos0]=0
+					ArrayPos0++
+					SaveRAM[ArrayPos0]=TempValue1
+				endif
+				if Options.GameMode==1
+					ArrayPos1=Options.SaveSlot
+					ArrayPos1<<=3
+					SaveRAM[ArrayPos1]=Stage.PlayerListPos
+					ArrayPos1++
+					SaveRAM[ArrayPos1]=Player.Lives
+					ArrayPos1++
+					SaveRAM[ArrayPos1]=Player.Score
+					ArrayPos1++
+					SaveRAM[ArrayPos1]=73
+					ArrayPos1++
+					SaveRAM[ArrayPos1]=SpecialStage.TimeStones
+					ArrayPos1++
+					SaveRAM[ArrayPos1]=SpecialStage.ListPos
+					ArrayPos1++
+					SaveRAM[ArrayPos1]=Player.ScoreBonus
+					ArrayPos1++
+					SaveRAM[ArrayPos1]=MetalSonic_List
+					SaveRAM[ArrayPos1]<<=16
+					SaveRAM[ArrayPos1]+=Good_Future_List
+					ArrayPos0=Options.SaveSlot
+					ArrayPos0*=800
+					ArrayPos0+=800
+					TempValue1=Stage.Seconds
+					TempValue1*=100
+					TempValue2=Stage.Minutes
+					TempValue2*=6000
+					TempValue1+=TempValue2
+					TempValue1+=Stage.MilliSeconds
+					SaveRAM[ArrayPos0]+=TempValue1
+					ArrayPos0++
+					TempValue2=SaveRAM[ArrayPos0]
+					SaveRAM[ArrayPos0]++
+					ArrayPos0+=4
+					TempValue2*=3
+					ArrayPos0+=TempValue2
+					if Stage.ListPos==71
+						SaveRAM[ArrayPos0]=69
+					else
+						SaveRAM[ArrayPos0]=68
+					endif
+					ArrayPos0++
+					SaveRAM[ArrayPos0]=0
+					ArrayPos0++
+					SaveRAM[ArrayPos0]=TempValue1
+					WriteSaveRAM()
+				endif
+				switch stage.PlayerListPos
+				case 0
+#platform: Mobile
+					EngineCallback(4)
+#endplatform
+#platform: Standard
+					if Stage.DebugMode==0
+					 if Options.GameMode==1
+						SaveRAM[264]=1
+						WriteSaveRAM()
+						SetAchievement(7,100)
+					 endif
+					endif
+					if MetalSonic_List>11
+					 if Options.GameMode==1
+						SaveRAM[268]=1
+						WriteSaveRAM()
+						SetAchievement(11,100)
+					 endif
+					endif
+					TempValue0=Stage.ListPos
+					TempValue0%=10
+					TempValue0>>=2
+					TempValue1=Stage.ListPos
+					TempValue1/=10
+					TempValue1*=3
+					TempValue0+=TempValue1
+					TempValue0++
+					TempValue1=Stage.Seconds
+					TempValue1*=100
+					TempValue2=Stage.Minutes
+					TempValue2*=6000
+					TempValue1+=TempValue2
+					TempValue1+=Stage.MilliSeconds
+					SetLeaderboard(TempValue0,TempValue1)
+#endplatform
+					if Player.Score>0
+#platform: Mobile
+						if Options.GameMode==1
+							if Stage.DebugMode==0
+#endplatform
+								SetLeaderboard(0,Player.Score)
+#platform: Mobile
+						endif
+#endplatform
+					endif
+#platform: Standard
+					EngineCallback(4)
+#endplatform
+					if SpecialStage.TimeStones>126
+#platform: Standard
+					if SaveRAM[362]==0
+						SaveRAM[38]=0
+					else
+						SaveRAM[38]+=1
+					endif
+					Options.Soundtrack=SaveRAM[38]
+					LoadVideo("Good_Ending")
+					if SaveRAM[362]==0
+						SaveRAM[38]=0
+					else
+						SaveRAM[38]-=1
+					endif
+#endplatform
+					else
+						if Good_Future_List>16382
+#platform: Standard
+					if SaveRAM[362]==0
+						SaveRAM[38]=0
+					else
+						SaveRAM[38]+=1
+					endif
+					Options.Soundtrack=SaveRAM[38]
+					LoadVideo("Good_Ending")
+					if SaveRAM[362]==0
+						SaveRAM[38]=0
+					else
+						SaveRAM[38]-=1
+					endif
+#endplatform
+						else
+#platform: Standard
+					if SaveRAM[362]==0
+						SaveRAM[38]=0
+					else
+						SaveRAM[38]+=1
+					endif
+					Options.Soundtrack=SaveRAM[38]
+					LoadVideo("Bad_Ending")
+					if SaveRAM[362]==0
+						SaveRAM[38]=0
+					else
+						SaveRAM[38]-=1
+					endif
+#endplatform
+						endif
+					endif
+					if SaveRAM[36]==0
+					 if Stage.DebugMode==0
+					  if Options.GameMode==1
+						SaveRAM[36]=1
+						if Options.SaveComplete==0
+							SaveRAM[300]=1
+						endif
+						WriteSaveRAM()
+						Stage.ListPos=8
+					  else			
+					   if Options.GameMode!=0
+						SaveRAM[36]=1
+						if Options.SaveComplete==0
+							SaveRAM[300]=1
+						endif
+						WriteSaveRAM()
+						Stage.ListPos=10
+					   else
+						Stage.ListPos=0
+					   endif
+					  endif
+					 else
+					  if Options.GameMode!=0
+						Stage.ListPos=10
+					  else
+						Stage.ListPos=0
+					  endif
+					 endif
+					else
+					  if Options.GameMode!=0
+						SaveRAM[36]=1
+						if Options.SaveComplete==0
+							SaveRAM[300]=1
+						endif
+						WriteSaveRAM()
+						Stage.ListPos=10
+					  else
+						Stage.ListPos=0
+					  endif
+					endif
+					break
+				case 1
+					if Stage.DebugMode==0
+						if Options.GameMode!=0
+							SaveRAM[36]=1
+							if Options.SaveComplete==0
+								SaveRAM[300]=1
+							endif
+							WriteSaveRAM()
+						endif
+					endif
+					Stage.ListPos=7
+				break
+				case 2
+				#platform: Standard
+					EngineCallback(4)
+#endplatform
+					if SpecialStage.TimeStones>126
+#platform: Standard
+						if SaveRAM[362]==0
+							SaveRAM[38]=0
+						else
+							SaveRAM[38]+=1
+						endif
+						Options.Soundtrack=SaveRAM[38]
+						LoadVideo("Good_Ending")
+						if SaveRAM[362]==0
+							SaveRAM[38]=0
+						else
+							SaveRAM[38]-=1
+						endif
+#endplatform
+					else
+						if Good_Future_List>16382
+#platform: Standard
+						if SaveRAM[362]==0
+							SaveRAM[38]=0
+						else
+							SaveRAM[38]+=1
+						endif
+						Options.Soundtrack=SaveRAM[38]
+						LoadVideo("Good_Ending")
+						if SaveRAM[362]==0
+							SaveRAM[38]=0
+						else
+							SaveRAM[38]-=1
+						endif
+#endplatform
+						else
+#platform: Standard
+							if SaveRAM[362]==0
+								SaveRAM[38]=0
+							else
+								SaveRAM[38]+=1
+							endif
+							Options.Soundtrack=SaveRAM[38]
+							LoadVideo("Bad_Ending")
+							if SaveRAM[362]==0
+								SaveRAM[38]=0
+							else
+								SaveRAM[38]-=1
+							endif
+#endplatform
+						endif
+					endif
+					if Stage.DebugMode==0
+						if Options.GameMode!=0
+							SaveRAM[36]=1
+							if Options.SaveComplete==0
+								SaveRAM[300]=1
+							endif
+							WriteSaveRAM()
+							Stage.ListPos=10
+					    else
+							Stage.ListPos=0
+						endif	
+					endif
+					break
+				endswitch
+			endif
+			switch SaveRAM[38]
+				case 0
+					Options.Soundtrack=0
+					break
+				case 1
+					Options.Soundtrack=1
+					break
+				case 2
+					Options.Soundtrack=2
+					break
+				case 3
+					Options.Soundtrack=3
+					break
+				case 4
+					Options.Soundtrack=4
+					break
+			endswitch	
+			Stage.ActiveList=PRESENTATION_STAGE
+			LoadStage()
+		endif
+		SetScreenFade(Object.Value0,Object.Value0,Object.Value0,255)
+		break
+	case 2
+		if Object.Value0>0
+			Music.Volume--
+			Object.Value0-=16
+		else
+			StopMusic()
+			Stage.ListPos+=2
+			LoadStage()
+		endif
+		break
+
+	endswitch
+endsub
+
+sub RSDK
+	LoadSpriteSheet("Global/Display.gif")
+	SetEditorIcon(Icon0,SingleIcon,-16,-16,32,32,1,143)
+endsub

@@ -1,0 +1,422 @@
+//------------Sonic CD TitleCard Script-------------//
+//--------Scripted by Christian Whitehead 'The Taxman'--------//
+//-------Unpacked By Rubberduckycooly's Script Unpacker-------//
+
+//-------Aliases-------//
+#alias 34: TYPE_TITLECARD
+
+#alias Object.Value0:Object.BarPos
+#alias Object.Value1:Object.TextPos
+#alias Object.Value2:Object.TextSize
+#alias Object.Value3:Object.FadeA
+#alias Object.Value4:Object.FadeR
+#alias Object.Value5:Object.FadeG
+#alias Object.Value6:Object.FadeB
+#alias Object.Value7:Object.CharPos
+#alias Player.Value1:Player.AbilityTimer
+
+#function PlayerObject_StartJump
+
+
+function PlayerObject_StartJump	
+	if Player.State==PlayerObject_HandleGround
+		CheckResult=Player.JumpPress
+		if Player.Speed==0
+			if Stage.PlayerListPos==0
+				if Player.Up==1
+					CheckResult=0
+				endif
+			endif
+			if Player.Down==1
+				CheckResult=0
+			endif
+		endif
+		if CheckResult==1
+			CheckResult=0
+			if Player.CollisionMode==0
+				TempValue6=Object.XPos
+				TempValue7=Object.YPos
+				Object.XPos=Player.XPos
+				Object.YPos=Player.YPos
+				TempValue0=Player.CollisionTop
+				TempValue0-=2
+				ObjectTileCollision(2,0,TempValue0,0)
+				Object.XPos=TempValue6
+				Object.YPos=TempValue7
+			endif
+			if CheckResult==0
+				Player.ControlLock=0
+				Player.Gravity=1
+				if Stage.PlayerListPos==0
+					Player.AbilityTimer=6
+				else
+					Player.AbilityTimer=8
+				endif
+				if Stage.Seconds>=1
+					Sin256(TempValue0,Player.Angle)
+					TempValue0*=Player.JumpStrength
+					TempValue0>>=8
+					Player.XVelocity+=TempValue0
+					Cos256(TempValue0,Player.Angle)
+					TempValue0*=Player.JumpStrength
+					TempValue0>>=8
+					Player.YVelocity-=TempValue0
+				else
+					Sin256(Player.XVelocity,Player.Angle)
+					Player.XVelocity*=Player.JumpStrength
+					Cos256(TempValue0,Player.Angle)
+					TempValue0*=Player.Speed
+					Player.XVelocity+=TempValue0
+					Player.XVelocity>>=8
+					Sin256(Player.YVelocity,Player.Angle)
+					Player.YVelocity*=Player.Speed
+					Cos256(TempValue0,Player.Angle)
+					TempValue0*=Player.JumpStrength
+					Player.YVelocity-=TempValue0
+					Player.YVelocity>>=8
+				endif
+				Player.Speed=Player.XVelocity
+				Player.TrackScroll=1
+				Player.Animation=ANI_JUMPING
+				Player.Angle=0
+				Player.CollisionMode=0
+				Player.Timer=1
+				CallFunction(PlayerObject_RollAnimSpeed)
+				Player.State=PlayerObject_HandleAir
+				if Warp.Count==false
+					PlaySfx(0,0)
+				endif
+			endif
+		endif
+	else
+		Player.ControlLock=0
+		Player.Gravity=1
+		if Stage.PlayerListPos==0
+			Player.AbilityTimer=6
+		else
+			Player.AbilityTimer=8
+		endif
+			Sin256(TempValue0,Player.Angle)
+			TempValue0*=Player.JumpStrength
+			TempValue0>>=8
+			Player.XVelocity+=TempValue0
+			Cos256(TempValue0,Player.Angle)
+			TempValue0*=Player.JumpStrength
+			TempValue0>>=8
+			Player.YVelocity-=TempValue0
+		Player.Speed=Player.XVelocity
+		Player.TrackScroll=1
+		Player.Animation=ANI_JUMPING
+		Player.Angle=0
+		Player.CollisionMode=0
+		Player.Timer=1
+		CallFunction(PlayerObject_RollAnimSpeed)
+		Player.State=PlayerObject_HandleAir
+		if Warp.Count==false
+			PlaySfx(0,0)
+		endif
+	endif
+endfunction
+
+
+sub ObjectPlayerInteraction
+	Player.Timer=0
+endsub
+
+
+sub ObjectDraw
+	switch Object.State
+	case 0
+		Player.ControlMode=-1
+		Player.Up=0
+		Player.Down=0
+		Player.Left=0
+		Player.Right=0
+		Player.JumpPress=0
+		Player.JumpHold=0
+		if Stage.Seconds<8
+			if Stage.ActNo==2
+				Player.Timer=1
+			endif
+		endif
+		if Warp.XPos<1
+			Player.Speed=0
+		endif
+		if Object.FadeA>0
+			if Object.FadeA==256
+				if Warp.XPos>0
+					Player.XPos=Warp.XPos
+					Player.YPos=Warp.YPos
+					Player.XVelocity=Warp.XVelocity
+					Player.YVelocity=Warp.YVelocity
+					if Warp.State==PlayerObject_Blank
+						Warp.State=PlayerObject_HandleAir
+					endif
+					if Warp.State==PlayerObject_HandleDropDash
+						Player.Value13=21
+						Warp.State=PlayerObject_HandleAir
+					endif
+					Player.State=Warp.State
+					Stage.MilliSeconds=Rec_Milliseconds
+					Stage.Seconds=Rec_Seconds
+					Stage.Minutes=Rec_Minutes
+					
+					// If the player had invincibility...
+					if Warp.Invincible>0
+						Player.Value4=Warp.Invincible
+						
+						Object[2].Type=TypeName[Invincibility]
+						Object[2].Priority=1
+						Object[2].DrawOrder=4
+						Object[2].XPos=Player.XPos
+						Object[2].YPos=Player.YPos
+						Player.Value5=0
+						Player.Visible=1
+						Music.Volume=100
+					endif
+					
+					// If the player had speed shoes...
+					if Warp.SpeedShoes>0
+						Player.Acceleration=6144
+						Player.AirAcceleration=12288
+						Player.TopSpeed=786432
+						Player.Value3=Warp.SpeedShoes
+						Music.Volume=100
+					endif
+					
+					// If the player had a shield...
+					if Warp.Shield==true
+						Object[2].PropertyValue=1
+						if Object[2].Type!=TypeName[Invincibility]
+							Object[2].Type=TypeName[BlueShield]
+							Object[2].Priority=1
+							Object[2].DrawOrder=4
+							Object[2].InkEffect=2
+							Object[2].Alpha=160
+							Object[2].XPos=Player.XPos
+							Object[2].YPos=Player.YPos
+						endif
+					endif
+					
+					// If the player didn't have invincibility...
+					if Warp.Invincible==0
+						// If the player didn't have speed shoes...
+						if Warp.SpeedShoes==0
+							PlayMusic(0)			// play the level music
+						endif
+						Player.Value4=8000			// give the player some invincibility (why 8000?)
+					endif
+					
+					// NEW TIME WARP - Play the flash SFX upon entering the time zone
+					//PlaySfx(18,0)
+					Object.FadeR=208
+					Object.FadeG=255
+					Object.FadeB=224
+				else
+					PlayMusic(0)					// play the level music
+				endif
+				Warp.Invincible=0
+				Warp.SpeedShoes=0
+				Warp.Shield=false
+				Warp.Timer=0
+				Warp.Frame=0
+			endif
+			SetScreenFade(Object.FadeR,Object.FadeG,Object.FadeB,Object.FadeA)
+			if Warp.XPos>0
+				Player.ControlMode=0
+				Stage.TimeEnabled=1
+				Object.FadeA-=11
+			else
+				Object.FadeA-=8
+			endif
+		else
+			Fade_Colour=0
+			CheckEqual(Warp.XPos,0)
+			TempValue0=CheckResult
+			CheckLower(LampPost.Check,32)
+			TempValue0&=CheckResult
+			if TempValue0==1
+				Object.State=1
+				Object.FadeA=0
+			else
+				Player.ControlMode=0
+				Stage.TimeEnabled=1
+				Screen.CameraStyle=1
+				ResetObjectEntity(20,TypeName[BlankObject],0,0,0)
+				Warp.XPos=0
+			endif
+		endif
+		break
+	case 1
+		TempValue0=144
+		TempValue0+=Object.CharPos
+		if Object.TextPos>TempValue0
+			Object.TextPos-=8
+#platform: Mobile
+		else
+			if Object.BarPos==0
+				Object.State=2
+			endif
+#endplatform
+		endif
+		if Object.BarPos<0
+			Object.BarPos+=8
+#platform: Standard
+		else
+			Object.State=2
+#endplatform
+		endif
+		break
+	case 2
+		if Object.FadeA==90
+			Object.State=3
+		else
+			Object.FadeA++
+		endif
+		break
+	case 3
+		if Object.TextPos<408
+			Object.TextPos+=16
+			Object.BarPos-=16
+		else
+			Player.ControlMode=0
+			Stage.TimeEnabled=1
+			ResetObjectEntity(20,TypeName[BlankObject],0,0,0)
+			Warp.XPos=0
+		endif
+		break
+
+	endswitch
+	if Object.Type>TypeName[BlankObject]
+		TempValue0=136
+		TempValue0+=Object.CharPos
+		DrawSpriteScreenXY(0,TempValue0,Object.BarPos)
+		DrawSpriteScreenXY(Stage.ActNo,Object.TextPos,80)
+		DrawSpriteScreenXY(4,Object.TextPos,80)
+		DrawSpriteScreenXY(5,Object.TextPos,80)
+		DrawSpriteScreenXY(6,Object.TextPos,80)
+		DrawSpriteScreenXY(7,Object.TextPos,80)
+		TempValue0=8
+		while TempValue0<Object.TextSize
+			DrawSpriteScreenXY(TempValue0,Object.TextPos,80)
+			TempValue0++
+		loop
+	endif
+endsub
+
+
+sub ObjectStartup
+	if Stage.PlayerListPos==0
+		LoadSpriteSheet("Global/Display.gif")
+	else
+		LoadSpriteSheet("Global/Display_t.gif")
+	endif
+	switch Object[24].PropertyValue
+	case 0
+		switch SaveRAM[329]
+			case 0
+				SetMusicTrack("JP/R5A.ogg",0,1)
+				break
+			case 1
+				SetMusicTrack("US/R5A.ogg",0,1)
+				break
+		endswitch
+		break
+	case 1
+		switch SaveRAM[330]
+			case 0
+				SetMusicTrack("R5B.ogg",0,619897)
+				break
+		endswitch
+		break
+	case 2
+		switch SaveRAM[331]
+			case 0
+				SetMusicTrack("JP/R5C.ogg",0,1)
+				break
+			case 1
+				SetMusicTrack("US/R5C.ogg",0,705830)
+				break
+		endswitch
+		break
+	case 3
+		switch SaveRAM[332]
+			case 0
+				SetMusicTrack("JP/R5D.ogg",0,1)
+				break
+			case 1
+				SetMusicTrack("US/R5D.ogg",0,1)
+				break
+		endswitch
+		break
+	endswitch
+	Flower_TypeNo=TypeName[Flower]
+	Object[20].Type=TypeName[TitleCard]
+	if Warp.XPos>0
+		Object[20].FadeA=256
+	else
+		Object[20].FadeA=384
+	endif
+	Player.RoofBarrier=1
+	Object[20].Priority=1
+	Object[20].DrawOrder=6
+	Object[20].CharPos=Screen.CenterX
+	Object[20].CharPos-=160
+	Object[20].BarPos=-216
+	Object[20].TextPos=336
+#platform: Standard
+	TempValue0=Screen.CenterX
+	while TempValue0>200
+		Object[20].CharPos+=8
+		Object[20].BarPos-=32
+		TempValue0-=12
+	loop
+#endplatform
+	if Object[20].CharPos>3
+		Object[20].CharPos-=4
+	endif
+	Object[20].CharPos&=248
+	Object[20].TextPos+=Object[20].CharPos
+	Object[20].TextPos+=Object[20].CharPos
+	Object[20].TextSize=14
+	Object[20].TextSize+=8
+	Object[20].FadeR=Fade_Colour
+	Object[20].FadeR>>=16
+	Object[20].FadeG=Fade_Colour
+	Object[20].FadeG&=65280
+	Object[20].FadeG>>=8
+	Object[20].FadeB=Fade_Colour
+	Object[20].FadeB&=255
+	SpriteFrame(0,0,32,200,223,1)
+	SpriteFrame(96,96,48,48,41,1)
+	SpriteFrame(96,96,48,48,90,1)
+	SpriteFrame(96,96,48,48,139,1)
+	SpriteFrame(64,97,48,16,41,67)
+#platform: Standard
+	SpriteFrame(64,81,160,16,41,50)
+#endplatform
+#platform: Mobile
+	SpriteFrame(72,81,160,16,49,50)
+#endplatform
+	SpriteFrame(16,81,160,16,41,50)
+	SpriteFrame(102,64,48,16,156,67)
+	SpriteFrame(0,0,20,55,100,133)
+	SpriteFrame(20,32,11,23,92,108)
+	SpriteFrame(32,32,11,23,43,84)
+	SpriteFrame(44,32,12,23,57,108)
+	SpriteFrame(56,32,10,23,81,108)
+	SpriteFrame(66,32,10,23,158,108)
+	SpriteFrame(0,56,20,55,100,133)
+	SpriteFrame(20,56,11,23,92,108)
+	SpriteFrame(32,56,11,23,43,84)
+	SpriteFrame(44,56,11,23,76,84)
+	SpriteFrame(56,56,12,23,57,108)
+	SpriteFrame(69,56,11,23,43,84)
+	SpriteFrame(81,56,11,23,187,84)
+	SpriteFrame(92,56,10,23,81,108)
+endsub
+
+sub RSDK
+	LoadSpriteSheet("Global/Display.gif")
+	SetEditorIcon(Icon0,SingleIcon,-16,-16,32,32,1,143)
+endsub

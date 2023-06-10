@@ -1,0 +1,578 @@
+//------------Sonic CD TouchStart Script-------------//
+//--------Scripted by Christian Whitehead 'The Taxman'--------//
+//-------Unpacked By Rubberduckycooly's Script Unpacker-------//
+
+//-------Aliases-------//
+#alias 6: TYPE_TOUCHSTART
+
+
+function TouchStart_HandleCheatCode
+	TempValue0=0
+	if KeyPress.Up==1
+		TempValue0=1
+	endif
+	if KeyPress.Down==1
+		TempValue0=2
+	endif
+	if KeyPress.Left==1
+		TempValue0=3
+	endif
+	if KeyPress.Right==1
+		TempValue0=4
+	endif
+	if KeyPress.ButtonA==1
+		TempValue0=5
+	endif
+	if KeyPress.ButtonB==1
+		TempValue0=6
+	endif
+	if KeyPress.ButtonC==1
+		TempValue0=7
+	endif
+	switch Object.Value1 // 1, 2, 2, 3, 4, 6 = up, down, down, left, right, B (stage select)
+	case 0
+		if TempValue0==1
+			Object.Value1++
+		else
+			if TempValue0!=0
+				Object.Value1=0
+			endif
+		endif
+		break
+	case 1
+		if TempValue0==2
+			Object.Value1++
+		else
+			if TempValue0!=0
+				Object.Value1=0
+			endif
+		endif
+		break
+	case 2
+		if TempValue0==2
+			Object.Value1++
+		else
+			if TempValue0!=0
+				Object.Value1=0
+			endif
+		endif
+		break
+	case 3
+		if TempValue0==3
+			Object.Value1++
+		else
+			if TempValue0!=0
+				Object.Value1=0
+			endif
+		endif
+		break
+	case 4
+		if TempValue0==4
+			Object.Value1++
+		else
+			if TempValue0!=0
+				Object.Value1=0
+			endif
+		endif
+		break
+	case 5
+		if TempValue0==6
+			Object.Value1=0
+			Object.State=2
+			StopMusic()
+			PlaySfx(1,0)
+		else
+			if TempValue0!=0
+				Object.Value1=0
+			endif
+		endif
+		break
+	endswitch
+	switch Object.Value2 // 2, 2, 2, 3, 4, 5 = down, down, down, left, right, A (sound test)
+	case 0
+		if TempValue0==2
+			Object.Value2++
+		else
+			if TempValue0!=0
+				Object.Value2=0
+			endif
+		endif
+		break
+	case 1
+		if TempValue0==2
+			Object.Value2++
+		else
+			if TempValue0!=0
+				Object.Value2=0
+			endif
+		endif
+		break
+	case 2
+		if TempValue0==2
+			Object.Value2++
+		else
+			if TempValue0!=0
+				Object.Value2=0
+			endif
+		endif
+		break
+	case 3
+		if TempValue0==3
+			Object.Value2++
+		else
+			if TempValue0!=0
+				Object.Value2=0
+			endif
+		endif
+		break
+	case 4
+		if TempValue0==4
+			Object.Value2++
+		else
+			if TempValue0!=0
+				Object.Value2=0
+			endif
+		endif
+		break
+	case 5
+		if TempValue0==5
+			Object.Value2=0
+			Object.State=3
+			StopMusic()
+			PlaySfx(1,0)
+		else
+			if TempValue0!=0
+				Object.Value2=0
+			endif
+		endif
+		break
+    endswitch
+	switch Object.Value4 // 4, 4, 1, 1, 2, 7 = right, right, up, up, down, C (dev times)
+	case 0
+		if TempValue0==4
+			Object.Value4++
+		else
+			if TempValue0!=0
+				Object.Value4=0
+			endif
+		endif
+		break
+	case 1
+		if TempValue0==4
+			Object.Value4++
+		else
+			if TempValue0!=0
+				Object.Value4=0
+			endif
+		endif
+		break
+	case 2
+		if TempValue0==1
+			Object.Value4++
+		else
+			if TempValue0!=0
+				Object.Value4=0
+			endif
+		endif
+		break
+	case 3
+		if TempValue0==1
+			Object.Value4++
+		else
+			if TempValue0!=0
+				Object.Value4=0
+			endif
+		endif
+		break
+	case 4
+		if TempValue0==2
+			Object.Value4++
+		else
+			if TempValue0!=0
+				Object.Value4=0
+			endif
+		endif
+		break
+	case 5
+		if TempValue0==7
+			Object.Value4=0
+			Object.State=5
+			StopMusic()
+			PlaySfx(1,0)
+		else
+			if TempValue0!=0
+				Object.Value4=0
+			endif
+		endif
+		break
+	endswitch
+endfunction
+	endswitch
+endfunction
+
+
+sub ObjectMain
+	switch Object.State
+	case 0
+		CallFunction(TouchStart_HandleCheatCode)
+#platform: Standard						  
+		if KeyPress.Start==1
+#endplatform
+
+#platform: Mobile
+		CheckTouchRect(0,0,Screen.XSize,240)
+		if KeyPress.Start==1
+			CheckResult=0
+		endif
+		if CheckResult>-1
+#endplatform   
+			Object.State=1
+			StopMusic()
+			PlaySfx(27,0)
+#platform: Use_Haptics
+			HapticEffect(31,0,0,0)
+#endplatform
+
+#platform: Standard
+			EngineCallback(1)
+#endplatform
+		else
+			Object.Value3++
+			switch SaveRAM[38]
+			case 0
+				if Object.Value3==2750
+					Object.State=4
+				endif
+				break
+			case 1
+				if Object.Value3==2750
+					Object.State=4
+				endif
+				break
+			case 2
+				if Object.Value3==1650
+					Object.State=4
+				endif
+				break
+			case 3
+				if Object.Value3==2750
+					Object.State=4
+				endif
+				break
+			case 4
+				switch SaveRAM[364]
+				case 0
+					if Object.Value3==2750
+						Object.State=4
+					endif
+					break
+				case 1
+					if Object.Value3==1650
+						Object.State=4
+					endif
+					break
+				case 2
+					if Object.Value3==1650
+						Object.State=4
+					endif
+					break
+				endswitch
+				break
+			endswitch
+		endif
+#platform: Mobile
+		if Engine.PlatformID==RETRO_WP7
+			if KeyPress.ButtonB==1
+				EngineCallback(7)
+			endif
+		endif
+#endplatform
+		break
+	case 1
+		Object.Value0+=4
+#platform: Standard
+		if Object.Value0==380
+			EngineCallback(16)
+		endif
+#endplatform
+		if Object.Value0==384
+			Stage.ListPos=1
+			LoadStage()
+		endif
+		SetScreenFade(0,0,0,Object.Value0)
+		break
+	case 2
+		Object.Value0+=4
+		if Object.Value0==384
+			Options.GameMode=0
+			Stage.ListPos=3
+			LoadStage()
+		endif
+		SetScreenFade(0,0,0,Object.Value0)
+		break
+	case 3
+		Object.Value0+=4
+		if Object.Value0==384
+			Options.GameMode=0
+			Stage.ListPos=4
+			LoadStage()
+		endif
+		SetScreenFade(0,0,0,Object.Value0)
+		break
+	case 4
+		Object.Value0+=4
+		if Object.Value0==384
+#platform: Use_Haptics
+			Engine.HapticsEnabled=0
+#endplatform
+#platform: Mobile
+			Fade_Colour=0
+#endplatform
+			Player.Score=0
+			Player.Lives=3
+			Player.ScoreBonus=50000
+			Transporter_Destroyed=0
+			MetalSonic_Destroyed=0
+			Good_Future=0
+			Options.GameMode=0
+			Options.AttractMode=1
+#platform: Mobile
+			if Engine.PlatformID==RETRO_ANDROID
+				if Engine.TrialMode==1
+					Options.DemoNumber=0
+				endif
+#endplatform
+			switch Options.DemoNumber
+			case 0
+				Stage.ActiveList=REGULAR_STAGE
+				Stage.ListPos=0
+				break
+			case 1
+				Stage.ActiveList=SPECIAL_STAGE
+				Stage.ListPos=0
+				break
+			case 2
+				Stage.ActiveList=REGULAR_STAGE
+				Stage.ListPos=28
+				break
+			case 3
+				Stage.PlayerListPos=1
+				Stage.ActiveList=SPECIAL_STAGE
+				Stage.ListPos=5
+				break
+			case 4
+				Stage.PlayerListPos=2
+				Stage.ActiveList=REGULAR_STAGE
+				Stage.ListPos=64
+				break
+
+			endswitch
+			Options.DemoNumber++
+			Options.DemoNumber%=5
+			LoadStage()
+		endif
+		SetScreenFade(0,0,0,Object.Value0)
+		break
+	case 5
+		Object.Value0+=4
+		if Object.Value0==384
+			Object.State++
+		endif
+		SetScreenFade(0,0,0,Object.Value0)
+		break
+	case 6
+		if Object.Value0<8
+			Object.Value0++
+		else
+			Object.Value0=288
+			Object.State++
+		endif
+		SetScreenFade(0,0,0,255)
+		break
+	case 7
+		if Object.Value0>0
+			Object.Value0-=16
+		else
+			PlayMusic(5)
+			Object.State++
+		endif
+		SetScreenFade(0,0,0,Object.Value0)
+		break
+	case 8
+		if Object.Value0<60
+			Object.Value0++
+		else
+			Object.Value0=0
+			Object.State++
+		endif
+		break
+	case 9
+		if Object.Value5>=0
+			Object.Value5=0
+			KeyDown.Up=0
+		else
+			if Object.Value5<=-482
+				Object.Value5=-482
+				KeyDown.Down=0
+			endif
+		endif
+		if KeyDown.Up==1
+			Object.Value5++
+			Object.Value5++
+			Object.Value5++
+		endif
+		if KeyDown.Down==1
+			Object.Value5--
+			Object.Value5--
+			Object.Value5--
+		endif
+		if KeyPress.Start==1
+			Object.State++
+		endif
+		CheckTouchRect(0,0,Screen.XSize,Screen.YSize)
+		if CheckResult>-1
+			Object.State++
+		endif
+		break
+	case 10
+		if Object.Value0<288
+			Object.Value0+=8
+			Music.Volume-=5
+		else
+			StopMusic()
+			Options.GameMode=0
+			Stage.ActiveList=PRESENTATION_STAGE
+			Stage.ListPos=0
+			LoadStage()
+		endif
+		TempValue0=Object.Value0
+		if TempValue0>255
+			TempValue0=255
+		endif
+		SetScreenFade(0,0,0,TempValue0)
+		break
+	endswitch
+endsub
+
+
+sub ObjectDraw
+	if Object.State<6
+		Object.AnimationTimer++
+		if Object.AnimationTimer>59
+			Object.AnimationTimer=0
+		endif
+		if Object.AnimationTimer>29
+			DrawSprite(0)
+		endif
+	else
+		TempValue0=0
+		while TempValue0<240
+			TempValue1=0
+			while TempValue1<Screen.XSize
+				DrawSpriteScreenXY(1,TempValue1,TempValue0)
+				TempValue1+=224
+			loop
+			TempValue0+=48
+		loop
+		TempValue0=Screen.CenterX
+		TempValue0-=104
+		TempValue2=Object.Value5
+		TempValue2+=16
+		DrawSpriteScreenXY(2,TempValue0,TempValue2)
+		TempValue0+=8
+		TempValue2+=29
+		DrawSpriteScreenXY(3,TempValue0,TempValue2)
+		TempValue2+=72
+		DrawSpriteScreenXY(4,TempValue0,TempValue2)
+		TempValue2+=72
+		DrawSpriteScreenXY(5,TempValue0,TempValue2)
+		TempValue2+=72
+		DrawSpriteScreenXY(6,TempValue0,TempValue2)
+		TempValue2+=72
+		DrawSpriteScreenXY(7,TempValue0,TempValue2)
+		TempValue2+=72
+		DrawSpriteScreenXY(8,TempValue0,TempValue2)
+		TempValue2+=72
+		DrawSpriteScreenXY(9,TempValue0,TempValue2)
+		TempValue2+=72
+		DrawSpriteScreenXY(10,TempValue0,TempValue2)
+		TempValue2+=72
+		DrawSpriteScreenXY(11,TempValue0,TempValue2)
+	endif
+endsub
+
+
+sub ObjectStartup
+	switch SaveRAM[364]
+		case 0
+			SetMusicTrack("AR/SpeedShoes.ogg",5,1)
+			break
+		case 1
+			SetMusicTrack("JP/SpeedShoes.ogg",5,1)
+			break
+		case 2
+			SetMusicTrack("Results.ogg",5,1)
+			break
+	endswitch
+	LoadSpriteSheet("Title/Title.gif")
+	#platform: Use_CrowdControl
+		LoadSpriteSheet("Title/CrowdControl.gif")
+	#endplatform
+#platform: Standard
+	switch Engine.Language
+	case 0
+	case 5
+		SpriteFrame(-43,0,87,11,106,103)
+		break
+	case 1
+		SpriteFrame(-60,0,120,11,391,387)
+		break
+	case 2
+		SpriteFrame(-44,0,88,11,270,411)
+		break
+	case 3
+		SpriteFrame(-52,-2,106,13,405,373)
+		break
+	case 4
+		SpriteFrame(-43,0,87,11,274,435)
+		break
+	endswitch
+#endplatform
+
+#platform: Mobile
+	switch Engine.Language
+	case 0
+	case 5
+		SpriteFrame(-56,0,117,11,106,91)
+		break
+	case 1
+		SpriteFrame(-94,0,189,11,322,399)
+		break
+	case 2
+		SpriteFrame(-76,0,152,11,359,411)
+		break
+	case 3
+		SpriteFrame(-87,0,175,11,336,423)
+		break
+	case 4
+		SpriteFrame(-74,0,149,11,362,435)
+		break
+	endswitch
+#endplatform
+	SpriteFrame(0,0,224,48,203,288)
+	SpriteFrame(0,0,208,13,203,337) // dev times
+	SpriteFrame(0,0,192,72,1,512)
+	SpriteFrame(0,0,192,72,1,585)
+	SpriteFrame(0,0,192,72,1,658)
+	SpriteFrame(0,0,192,72,194,512)
+	SpriteFrame(0,0,192,72,194,585)
+	SpriteFrame(0,0,192,72,194,658)
+	SpriteFrame(0,0,192,72,1,731)
+	SpriteFrame(0,0,192,72,1,804)
+	SpriteFrame(0,0,192,85,194,731)
+endsub
+
+sub RSDK
+	LoadSpriteSheet("Global/Display.gif")
+	SetEditorIcon(Icon0,SingleIcon,-16,-16,32,32,1,143)
+endsub

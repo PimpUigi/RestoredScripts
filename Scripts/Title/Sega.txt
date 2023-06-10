@@ -1,0 +1,198 @@
+//------------Sonic CD Sega Script-------------//
+//--------Scripted by Christian Whitehead 'The Taxman'--------//
+//-------Unpacked By Rubberduckycooly's Script Unpacker-------//
+
+//-------Aliases-------//
+#alias 1: TYPE_SEGA
+
+
+sub ObjectMain
+	switch Object.State
+	case 0
+	if SaveRAM[38]!=0
+		SaveRAM[38]=0
+		WriteSaveRAM()
+	endif
+	if SaveRAM[300]==1
+		SaveRAM[300]=0
+		WriteSaveRAM()
+	endif
+	if SaveRAM[301]==1
+		SaveRAM[301]=0
+		WriteSaveRAM()
+	endif
+	if SaveRAM[302]==1
+		SaveRAM[302]=0
+		WriteSaveRAM()
+	endif
+	TempValue2=0
+	TempValue3=0
+		ReadSaveRAM()
+		if SaveRAM[32]==1
+			Engine.BGMVolume=SaveRAM[33]
+			Engine.SFXVolume=SaveRAM[34]
+#platform: Use_Haptics
+			Engine.HapticsEnabled=SaveRAM[40]
+#endplatform
+		endif
+		Options.Soundtrack=SaveRAM[38]
+		Object.State=1
+		Object.Value0=384
+		Object.Alpha=255
+		Object.InkEffect=2
+		SetScreenFade(0,0,0,255)
+		Object.iXPos=Screen.CenterX
+		Engine.State=5
+		break
+	case 1
+		if Object.Value0>0
+			Object.Value0-=8
+		else
+			if Engine.OnlineActive<2
+				PlayStageSfx(0,0)
+				Object.State=2
+			endif
+		endif
+		SetScreenFade(0,0,0,Object.Value0)
+		break
+	case 2
+		Object.Value0++
+		if Object.Value0==160
+			Object.Value0=0
+			Object.State=3
+		endif
+		if Object.Value0==2
+		endif
+		break
+	case 3
+		if Object.Value1<256
+			Object.Value1+=8
+		endif
+		if Object.Alpha>7
+			Object.Alpha-=8
+		else
+			if Object.Value0==16
+				ResetObjectEntity(Object.EntityNo,TypeName[CWLogo],0,Object.XPos,Object.YPos)
+				Object.InkEffect=2
+				Object.Alpha=0
+				Object.Value0=0
+				Object.Value3=0
+			else
+				Object.Value0++
+			endif
+		endif
+		endswitch
+        if KeyPress.ButtonA==1
+			if Object.State<3
+				Object.State++
+				Object.Value0=0
+			endif
+        endif
+        if KeyPress.ButtonB==1
+			if Object.State<3
+				Object.State++
+				Object.Value0=0
+			endif
+        endif
+        if KeyPress.ButtonC==1
+			if Object.State<3
+				Object.State++
+				Object.Value0=0
+			endif
+        endif
+        if KeyPress.Start==1
+			if Object.State<3
+				Object.State++
+				Object.Value0=0
+			endif
+        endif
+endsub
+
+
+
+sub ObjectDraw
+	DrawRect(0,0,Screen.XSize,Screen.YSize,0,0,0,255)
+	Object.Scale=512
+	DrawSpriteFX(0,FX_SCALE,Object.XPos,Object.YPos)
+	DrawRect(0,0,Screen.XSize,Screen.YSize,0,0,0,Object.Value1)
+	TempValue2++
+	if TempValue2>32
+		TempValue2=0
+		TempValue3++
+	endif
+	switch TempValue3
+	case 0
+		TempValue0=0
+		TempValue1=73
+		break
+	case 1
+		if TempValue0<107
+			TempValue0+=8
+		endif
+		if TempValue0<107
+			TempValue0=107
+		endif
+		if TempValue1<255
+			TempValue1+=8
+		endif
+		if TempValue1>255
+			TempValue1=255
+		endif
+		break
+	case 2
+		if TempValue0>0
+			TempValue0-=8
+		endif
+		if TempValue0<0
+			TempValue0=0
+		endif
+		if TempValue1>73
+			TempValue1-=8
+		endif
+		if TempValue1>73
+			TempValue1=TempValue1
+		endif
+		break
+	case 3
+		if TempValue0<181
+			TempValue0+=8
+		endif
+		if TempValue0>181
+			TempValue0=181
+		endif
+		if TempValue1<255
+			TempValue1+=8
+		endif
+		if TempValue1>255
+			TempValue1=255
+		endif
+		break
+	case 4
+		if TempValue0>0
+			TempValue0-=8
+		endif
+		if TempValue0<0
+			TempValue0=0
+		endif
+		if TempValue1>73
+			TempValue1-=8
+		endif
+		if TempValue1<73
+			TempValue1=73
+		endif
+		break
+		endswitch
+	SetPaletteFade(0,TempValue0,TempValue1,255,255,91,92)
+endsub
+
+
+sub ObjectStartup
+	LoadSpriteSheet("Title/Sega.gif")
+	LoadPalette("Title.act",0,0,0,256)
+	SpriteFrame(-255,-87,510,174,1,1)
+endsub
+
+sub RSDK
+	LoadSpriteSheet("Global/Display.gif")
+	SetEditorIcon(Icon0,SingleIcon,-16,-16,32,32,1,143)
+endsub
