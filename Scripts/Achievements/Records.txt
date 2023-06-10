@@ -1,0 +1,254 @@
+//------------Sonic CD Records Script-------------//
+//--------Scripted by Christian Whitehead 'The Taxman'--------//
+//-------Unpacked By Rubberduckycooly's Script Unpacker-------//
+
+//-------Aliases-------//
+#alias 5: TYPE_RECORDS
+
+// Function delarations
+#function Records_Function5
+
+function Records_Function5
+	TempValue0=Object[-1].PropertyValue
+	TempValue0+=52
+	DrawSprite(TempValue0)
+	ReadSaveRAM()
+	if Object[-1].PropertyValue==0
+		if SaveRAM[257]==1
+			DrawSprite(60)
+		else
+			DrawSprite(61)
+		endif
+	endif
+	if Object[-1].PropertyValue==1
+		if SaveRAM[258]==1
+			DrawSprite(60)
+		else
+			DrawSprite(61)
+		endif
+	endif
+	if Object[-1].PropertyValue==2
+		if SaveRAM[259]==1
+			DrawSprite(60)
+		else
+			DrawSprite(61)
+		endif
+	endif
+	if Object[-1].PropertyValue==3
+		if SaveRAM[260]==1
+			DrawSprite(60)
+		else
+			DrawSprite(61)
+		endif
+	endif
+	if Object[-1].PropertyValue==4
+		if SaveRAM[261]==1
+			DrawSprite(60)
+		else
+			DrawSprite(61)
+		endif
+	endif
+	if Object[-1].PropertyValue==5
+		if SaveRAM[262]==1
+			DrawSprite(60)
+		else
+			DrawSprite(61)
+		endif
+	endif
+	if Object[-1].PropertyValue==6
+		if SaveRAM[263]==1
+			DrawSprite(60)
+		else
+			DrawSprite(61)
+		endif
+	endif
+	if Object[-1].PropertyValue==7
+		if SaveRAM[264]==1
+			DrawSprite(60)
+		else
+			DrawSprite(61)
+		endif
+	endif
+endfunction
+
+
+sub ObjectMain
+	Object.YPos=Object.PropertyValue
+	Object.YPos*=192
+	Object.YPos-=Object[0].Value4
+	if Object.YPos<-384
+		Object.YPos+=576
+	endif
+	Object.YPos+=224
+	Object.YPos<<=16
+endsub
+
+
+sub ObjectDraw
+	DrawSprite(47)
+	switch Object.PropertyValue
+	case 0
+		TempValue0=Object[-1].PropertyValue
+		TempValue0+=36
+		DrawSprite(TempValue0)
+		DrawSprite(44)
+		break
+	case 1
+		TempValue0=Object[-2].PropertyValue
+		TempValue0+=36
+		DrawSprite(TempValue0)
+		DrawSprite(45)
+		break
+	case 2
+		TempValue0=Object[-3].PropertyValue
+		TempValue0+=36
+		DrawSprite(TempValue0)
+		DrawSprite(46)
+		break
+
+	endswitch
+	ArrayPos0=TempValue0
+	ArrayPos0-=36
+	ArrayPos0*=18
+	TempValue0=Object.PropertyValue
+	TempValue0*=6
+	ArrayPos0+=TempValue0
+	ArrayPos0+=48
+	TempValue1=Object.YPos
+	TempValue1>>=16
+	TempValue1+=97
+	CallFunction(Records_Function5)
+	TempValue1+=24
+	ArrayPos0+=2
+	CallFunction(Records_Function5)
+	TempValue1+=24
+	ArrayPos0+=2
+	CallFunction(Records_Function5)
+#platform: Standard
+	switch Object[0].State
+	case 7
+		switch Object[0].Value5
+		case 0
+			DrawSprite(48)
+			break
+		case 1
+			DrawSprite(49)
+			break
+		case 2
+			DrawSprite(50)
+			break
+
+		endswitch
+		break
+	case 10
+		TempValue0=Object[0].Value0
+		TempValue0&=3
+		TempValue0>>=1
+		if TempValue0==0
+			DrawSprite(50)
+		endif
+		break
+	case 11
+		DrawSprite(50)
+		break
+	case 13
+		TempValue0=Object[0].Value0
+		TempValue0&=3
+		TempValue0>>=1
+		if TempValue0==0
+			DrawSprite(48)
+		endif
+		break
+
+	endswitch
+#endplatform
+
+#platform: Mobile
+	DrawSprite(51)
+#endplatform
+endsub
+
+
+sub ObjectStartup
+	LoadSpriteSheet("Achievements/Achievements.gif")
+	ArrayPos0=32
+	while ArrayPos0<1056
+		if Object[ArrayPos0].Type==TypeName[Records]
+			TempValue0=Screen.CenterX
+			TempValue0+=76
+			TempValue0<<=16
+			Object[ArrayPos0].XPos=TempValue0
+			Object[ArrayPos0].DrawOrder=2
+			Object[ArrayPos0].Priority=1
+		endif
+		ArrayPos0++
+	loop
+	SpriteFrame(0,0,8,16,136,638)
+	SpriteFrame(0,0,8,16,145,638)
+	SpriteFrame(0,0,8,16,154,638)
+	SpriteFrame(0,0,8,16,163,638)
+	SpriteFrame(0,0,8,16,172,638)
+	SpriteFrame(0,0,8,16,181,638)
+	SpriteFrame(0,0,8,16,190,638)
+	SpriteFrame(0,0,8,16,199,638)
+	SpriteFrame(0,0,8,16,208,638)
+	SpriteFrame(0,0,8,16,217,638)
+	SpriteFrame(0,0,8,16,226,638)
+	SpriteFrame(0,0,8,16,235,638)
+	SpriteFrame(0,0,8,16,244,638)
+	SpriteFrame(0,0,8,16,253,638)
+	SpriteFrame(0,0,8,16,262,638)
+	SpriteFrame(0,0,8,16,280,638)
+	SpriteFrame(0,0,8,16,289,638)
+	SpriteFrame(0,0,8,16,298,638)
+	SpriteFrame(0,0,8,16,307,638)
+	SpriteFrame(0,0,8,16,316,638)
+	SpriteFrame(0,0,8,16,325,638)
+	SpriteFrame(0,0,8,16,334,638)
+	SpriteFrame(0,0,8,16,343,638)
+	SpriteFrame(0,0,8,16,352,638)
+	SpriteFrame(0,0,8,16,361,638)
+	SpriteFrame(0,0,8,16,361,638)
+	SpriteFrame(0,0,8,16,370,638)
+	SpriteFrame(0,0,8,16,379,638)
+	SpriteFrame(0,0,8,16,388,638)
+	SpriteFrame(0,0,8,16,397,638)
+	SpriteFrame(0,0,8,16,406,638)
+	SpriteFrame(0,0,8,16,415,638)
+	SpriteFrame(0,0,8,16,424,638)
+	SpriteFrame(0,0,8,16,433,638)
+	SpriteFrame(0,0,8,16,442,638)
+	SpriteFrame(0,0,8,16,451,638)
+	SpriteFrame(-32,25,64,32,1,731)
+	SpriteFrame(-42,25,88,32,66,731)
+	SpriteFrame(-30,25,63,32,66,764)
+	SpriteFrame(-35,25,70,32,193,731)
+	SpriteFrame(-38,25,77,32,264,731)
+	SpriteFrame(-34,25,68,32,342,731)
+	SpriteFrame(-32,25,64,32,1,764)
+	SpriteFrame(-37,25,75,32,130,764)
+	SpriteFrame(-20,49,38,16,368,593)
+	SpriteFrame(-20,49,40,15,366,610)
+	SpriteFrame(-20,49,40,15,422,655)
+	SpriteFrame(-60,0,224,192,81,831)
+	SpriteFrame(-60,0,112,8,306,864)
+	SpriteFrame(-16,0,40,8,350,864)
+	SpriteFrame(24,0,28,8,390,864)
+	SpriteFrame(-60,0,112,8,306,855)
+	SpriteFrame(-55,90,112,21,1,261)
+	SpriteFrame(-55,90,112,21,1,283)
+	SpriteFrame(-59,85,120,32,1,305)
+	SpriteFrame(-59,80,120,43,1,338)
+	SpriteFrame(-45,95,88,21,1,382)
+	SpriteFrame(-59,85,120,32,1,404)
+	SpriteFrame(-49,85,104,32,1,437)
+	SpriteFrame(-40,95,80,21,1,470)
+	SpriteFrame(-40,145,77,10,1,547)
+	SpriteFrame(-40,145,77,10,1,558)
+
+endsub
+
+sub RSDK
+	LoadSpriteSheet("Global/Display.gif")
+	SetEditorIcon(Icon0,SingleIcon,-16,-16,32,32,1,143)
+endsub

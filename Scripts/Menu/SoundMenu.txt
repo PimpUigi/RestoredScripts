@@ -1,0 +1,3733 @@
+//------------Sonic CD Options Menu Script-------------//
+//--------Scripted by Christian Whitehead 'The Taxman'--------//
+//-------Unpacked By Rubberduckycooly's Script Unpacker-------//
+
+//-------Aliases-------//
+#alias 7: TYPE_OPTIONSMENUC
+
+function OptionsMenuC_Function6
+	switch Object[+ArrayPos0].Value2
+	case 0
+		if ArrayPos0==Object.Value1
+			DrawSpriteScreenFX(9,FX_INK,Object.XPos,Object.YPos)
+			TempValue0=ArrayPos0
+			TempValue0+=14
+			//DrawSpriteScreenFX(TempValue0,FX_INK,Object.XPos,Object.YPos)
+		else
+			TempValue0=ArrayPos0
+			TempValue0+=10
+			DrawSpriteScreenFX(TempValue0,FX_INK,Object.XPos,Object.YPos)
+		endif
+		break
+	case 1
+		TempValue0=Object.Value0
+		TempValue0&=3
+		TempValue0>>=1
+		DrawSpriteScreenFX(9,FX_INK,Object.XPos,Object.YPos)
+		if TempValue0==0
+			TempValue0=ArrayPos0
+			TempValue0+=14
+			DrawSpriteScreenFX(TempValue0,FX_INK,Object.XPos,Object.YPos)
+		endif
+		break
+
+	endswitch
+	//DrawSpriteScreenFX(8,FX_INK,Object.XPos,Object.YPos)
+	DrawSpriteScreenFX(31,FX_INK,Object.XPos,Object.YPos)
+endfunction
+
+sub ObjectMain
+	switch Object.State
+	case 0
+		Object.XPos=Screen.CenterX
+		Object.XPos-=126
+		Object.State++
+		break
+	case 1
+			ReadSaveRAM()
+			if SaveRAM[32]==0
+				SaveRAM[33]=100
+				SaveRAM[34]=100
+				SaveRAM[35]=0
+			endif
+			Object.State=4
+			Object.YPos=40
+			Object.YPos*=Object.Value1
+			Object.YPos+=Screen.CenterY
+			Object.YPos-=87
+		break
+	case 4
+		TempValue0=Screen.CenterY
+		TempValue0-=87
+		if Object.YPos>TempValue0
+			Object.YPos-=8
+			if Object.YPos<TempValue0
+				Object.YPos=TempValue0
+			endif
+		else
+			Object.State++
+			Object.Alpha=0
+			Object[+4].Value1=0
+#platform: Mobile
+			if Options.PhysicalControls==0
+				ArrayPos0=Object.Value1
+				Object[+4].Value1=-1
+			endif
+#endplatform
+		endif
+		break
+	case 5
+		if Object.Value0<256
+			Object.Alpha=Object.Value0
+			Object.Value0+=8
+		else
+			Object.Value0=0
+			Object.Alpha=255
+			Object.State++
+		endif
+		if Screen.CenterX>TempValue7
+			TempValue7+=3
+		endif
+		break
+	case 6
+		ArrayPos0=Object.Value1
+#platform: Mobile
+		if Options.PhysicalControls==1
+#endplatform
+			// Menu Up/Down
+			if KeyPress.Up==1
+				if Object[+4].Value1==29
+					if SaveRAM[343]==0
+						Object[+4].Value1-=2
+					else 
+						Object[+4].Value1--
+					endif
+				else 
+					Object[+4].Value1--
+				endif
+		
+				PlaySfx(23,0)
+				if Object[+4].Value1<0
+					Object[+4].Value1=48
+				endif
+			endif
+			if KeyPress.Down==1		
+				if Object[+4].Value1==27
+					if SaveRAM[343]==0
+						Object[+4].Value1+=2
+					else 
+						Object[+4].Value1++
+					endif
+				else 
+					Object[+4].Value1++
+				endif
+				PlaySfx(23,0)
+				if Object[+4].Value1>48
+					Object[+4].Value1=0
+				endif
+			endif
+			
+			switch Object[+4].Value1
+			//Page 1
+			case 0 // Soundtrack
+				if KeyPress.Left==1												
+				endif
+				if KeyPress.Right==1								
+				endif
+				break
+			case 1 // PP Present
+				if KeyPress.Left==1
+					SaveRAM[317]--
+						if SaveRAM[317]<0
+							SaveRAM[317]=3
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[317]++
+					if SaveRAM[317]>3
+						SaveRAM[317]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[317]
+					case 0
+						SetMusicTrack("AR/R1A.ogg",0,154930)// Arrange
+						break
+					case 1
+						SetMusicTrack("UN/R1A.ogg",1,154930// Unified
+						break
+					case 2
+						SetMusicTrack("JP/R1A.ogg",2,12461)// JP
+						break
+					case 3
+						SetMusicTrack("US/R1A.ogg",3,153038)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[317])
+					Object[+4].Value2=1
+				endif
+				break
+			case 2 // PP Past
+				if KeyPress.Left==1
+					SaveRAM[318]--
+						if SaveRAM[318]<0
+							SaveRAM[318]=2
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[318]++
+					if SaveRAM[318]>2
+						SaveRAM[318]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[318]
+					case 0
+						SetMusicTrack("US/R1C.ogg",0,152346)// Hybrid P+A
+						break
+					case 1
+						SetMusicTrack("R1B.ogg",1,354890)// JP
+						break					
+					case 2
+						SetMusicTrack("R1B-Beta.ogg",2,354890)// JP Beta
+						break
+					endswitch
+					PlayMusic(SaveRAM[318])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 3 // PP Good Future
+				if KeyPress.Left==1
+					SaveRAM[319]--
+						if SaveRAM[319]<0
+							SaveRAM[319]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[319]++
+					if SaveRAM[319]>1
+						SaveRAM[319]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[319]
+					case 0
+						SetMusicTrack("JP/R1C.ogg",0,156021)// JP
+						break
+					case 1
+						SetMusicTrack("US/R1C.ogg",1,152346)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[319])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 4 // PP Bad Future
+				if KeyPress.Left==1
+					SaveRAM[320]--
+						if SaveRAM[320]<0
+							SaveRAM[320]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[320]++
+					if SaveRAM[320]>1
+						SaveRAM[320]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[320]
+					case 0
+						SetMusicTrack("JP/R1D.ogg",0,1)// JP
+						break
+					case 1
+						SetMusicTrack("US/R1D.ogg",1,774998)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[320])
+					Object[+4].Value2=1
+				endif
+				break
+			case 5 // CC Present
+				if KeyPress.Left==1
+					SaveRAM[321]--
+						if SaveRAM[321]<0
+							SaveRAM[321]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[321]++
+					if SaveRAM[321]>1
+						SaveRAM[321]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[321]
+					case 0
+						SetMusicTrack("JP/R3A.ogg",0,1)// JP
+						break
+					case 1
+						SetMusicTrack("US/R3A.ogg",1,1)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[321])
+					Object[+4].Value2=1
+				endif
+				break
+			case 6 // CC Past
+				if KeyPress.Left==1
+					SaveRAM[322]--
+						if SaveRAM[322]<0
+							SaveRAM[322]=0
+						endif
+					WriteSaveRAM()								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[322]++
+					if SaveRAM[322]>0
+						SaveRAM[322]=0
+					endif
+					WriteSaveRAM()
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[322]
+					case 0
+						SetMusicTrack("R3B.ogg",0,166278)
+						break
+					endswitch
+					PlayMusic(SaveRAM[322])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 7 // CC Good Future
+				if KeyPress.Left==1
+					SaveRAM[323]--
+						if SaveRAM[323]<0
+							SaveRAM[323]=2
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[323]++
+					if SaveRAM[323]>2
+						SaveRAM[323]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[323]
+					case 0
+						SetMusicTrack("JP/R8C.ogg",0,1)// Arrange
+						break
+					case 1
+						SetMusicTrack("JP/R3C.ogg",1,1)// JP
+						break
+					case 2
+						SetMusicTrack("US/R3C.ogg",2,1)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[323])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 8 // CC Bad Future
+				if KeyPress.Left==1
+					SaveRAM[324]--
+						if SaveRAM[324]<0
+							SaveRAM[324]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[324]++
+					if SaveRAM[324]>1
+						SaveRAM[324]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[324]
+					case 0
+						SetMusicTrack("JP/R3D.ogg",0,1)// JP
+						break
+					case 1
+						SetMusicTrack("US/R3D.ogg",1,1)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[324])
+					Object[+4].Value2=1
+				endif
+				break
+			case 9 // TT Present
+				if KeyPress.Left==1
+					SaveRAM[325]--
+						if SaveRAM[325]<0
+							SaveRAM[325]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[325]++
+					if SaveRAM[325]>1
+						SaveRAM[325]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[325]
+					case 0
+						SetMusicTrack("US/R4A.ogg",0,1)// JP
+						break
+					case 1
+						SetMusicTrack("JP/R4A.ogg",1,1)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[325])
+					Object[+4].Value2=1
+				endif
+				break
+			case 10 // TT Past
+				if KeyPress.Left==1
+					SaveRAM[326]--
+						if SaveRAM[326]<0
+							SaveRAM[326]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[326]++
+					if SaveRAM[326]>1
+						SaveRAM[326]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[326]
+					case 0
+						SetMusicTrack("US/R4D.ogg",0,145616)// Hybrid P+A
+						break
+					case 1
+						SetMusicTrack("R4B.ogg",1,1)// JP
+						break
+					endswitch
+					PlayMusic(SaveRAM[326])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 11 // TT Good Future
+				if KeyPress.Left==1
+					SaveRAM[327]--
+						if SaveRAM[327]<0
+							SaveRAM[327]=2
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[327]++
+					if SaveRAM[327]>2
+						SaveRAM[327]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[327]
+					case 0
+						SetMusicTrack("AR/R4C.ogg",0,1)// Hybrid P+A
+						break
+					case 1
+						SetMusicTrack("JP/R4C.ogg",1,1)// JP
+						break
+					case 2
+						SetMusicTrack("US/R4C.ogg",2,1)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[327])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 12 // TT Bad Future
+				if KeyPress.Left==1
+					SaveRAM[328]--
+						if SaveRAM[328]<0
+							SaveRAM[328]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[328]++
+					if SaveRAM[328]>1
+						SaveRAM[328]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[328]
+					case 0
+						SetMusicTrack("JP/R4D.ogg",0,1)// JP
+						break
+					case 1
+						SetMusicTrack("US/R4D.ogg",1,145616)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[328])
+					Object[+4].Value2=1
+				endif
+				break
+			case 13 // QQ Present
+				if KeyPress.Left==1
+					SaveRAM[329]--
+						if SaveRAM[329]<0
+							SaveRAM[329]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[329]++
+					if SaveRAM[329]>1
+						SaveRAM[329]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[329]
+					case 0
+						SetMusicTrack("JP/R5A.ogg",0,1)// JP
+						break
+					case 1
+						SetMusicTrack("US/R5A.ogg",1,1)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[329])
+					Object[+4].Value2=1
+				endif
+				break
+			case 14 // QQ Past
+				if KeyPress.Left==1
+					SaveRAM[330]--
+						if SaveRAM[330]<0
+							SaveRAM[330]=0
+						endif
+					WriteSaveRAM()								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[330]++
+					if SaveRAM[330]>0
+						SaveRAM[330]=0
+					endif
+					WriteSaveRAM()
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[330]
+					case 0
+						SetMusicTrack("R5B.ogg",0,619897)// JP
+						break
+					endswitch
+					PlayMusic(SaveRAM[330])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 15 // QQ Good Future
+				if KeyPress.Left==1
+					SaveRAM[331]--
+						if SaveRAM[331]<0
+							SaveRAM[331]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[331]++
+					if SaveRAM[331]>1
+						SaveRAM[331]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[331]
+					case 0
+						SetMusicTrack("JP/R5C.ogg",0,1)// JP
+						break
+					case 1
+						SetMusicTrack("US/R5C.ogg",1,705830)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[331])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 16 // QQ Bad Future
+				if KeyPress.Left==1
+					SaveRAM[332]--
+						if SaveRAM[332]<0
+							SaveRAM[332]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[332]++
+					if SaveRAM[332]>1
+						SaveRAM[332]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[332]
+					case 0
+						SetMusicTrack("JP/R5D.ogg",0,1)// JP
+						break
+					case 1
+						SetMusicTrack("US/R5D.ogg",1,1)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[332])
+					Object[+4].Value2=1
+				endif
+				break
+			case 17 // WW Present
+				if KeyPress.Left==1
+					SaveRAM[333]--
+						if SaveRAM[333]<0
+							SaveRAM[333]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[333]++
+					if SaveRAM[333]>1
+						SaveRAM[333]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[333]
+					case 0
+						SetMusicTrack("JP/R6A.ogg",0,1)// JP
+						break
+					case 1
+						SetMusicTrack("US/R6A.ogg",1,926048)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[333])
+					Object[+4].Value2=1
+				endif
+				break
+			case 18 // WW Past
+				if KeyPress.Left==1
+					SaveRAM[334]--
+						if SaveRAM[334]<0
+							SaveRAM[334]=2
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[334]++
+					if SaveRAM[334]>2
+						SaveRAM[334]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[334]
+					case 0
+						SetMusicTrack("AR/R6B.ogg",0,1))// Arrange
+						break
+					case 1
+						SetMusicTrack("AR/R8B.ogg",1,1))// Unified
+						break
+					case 2
+						SetMusicTrack("R6B.ogg",2,1)// JP
+						break
+					endswitch
+					PlayMusic(SaveRAM[334])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 19 // WW Good Future
+				if KeyPress.Left==1
+					SaveRAM[335]--
+						if SaveRAM[335]<0
+							SaveRAM[335]=2
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[335]++
+					if SaveRAM[335]>2
+						SaveRAM[335]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[335]
+					case 0
+						SetMusicTrack("AR/R6C.ogg",0,1)// Arrange
+						break
+					case 1
+						SetMusicTrack("JP/R6C.ogg",1,1)// JP
+						break
+					case 2
+						SetMusicTrack("US/R6C.ogg",2,181704)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[335])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 20 // WW Bad Future
+				if KeyPress.Left==1
+					SaveRAM[336]--
+						if SaveRAM[336]<0
+							SaveRAM[336]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[336]++
+					if SaveRAM[336]>1
+						SaveRAM[336]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[336]
+					case 0
+						SetMusicTrack("JP/R6D.ogg",0,1)// JP
+						break
+					case 1
+						SetMusicTrack("US/R6D.ogg",1,45355)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[336])
+					Object[+4].Value2=1
+				endif
+				break
+			case 21 // SS Present
+				if KeyPress.Left==1
+					SaveRAM[337]--
+						if SaveRAM[337]<0
+							SaveRAM[337]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[337]++
+					if SaveRAM[337]>1
+						SaveRAM[337]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[337]
+					case 0
+						SetMusicTrack("US/R7A.ogg",0,617728)
+						break
+					case 1
+						SetMusicTrack("JP/R7A.ogg",1,1)
+						break
+					endswitch
+					PlayMusic(SaveRAM[337])
+					Object[+4].Value2=1
+				endif
+				break
+			case 22 // SS Past
+				if KeyPress.Left==1
+					SaveRAM[338]--
+						if SaveRAM[338]<0
+							SaveRAM[338]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[338]++
+					if SaveRAM[338]>1
+						SaveRAM[338]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[338]
+					case 0
+						SetMusicTrack("AR/R7B.ogg",0,719745)// Hybrid P+A
+						break
+					case 1
+						SetMusicTrack("R7B.ogg",1,730678)// JP
+						break
+					endswitch
+					PlayMusic(SaveRAM[338])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 23 // SS Good Future
+				if KeyPress.Left==1
+					SaveRAM[339]--
+						if SaveRAM[339]<0
+							SaveRAM[339]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[339]++
+					if SaveRAM[339]>1
+						SaveRAM[339]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[339]
+					case 0
+						SetMusicTrack("JP/R7C.ogg",0,103060)// JP
+						break
+					case 1
+						SetMusicTrack("US/R7C.ogg",1,1)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[339])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 24 // SS Bad Future
+				if KeyPress.Left==1
+					SaveRAM[340]--
+						if SaveRAM[340]<0
+							SaveRAM[340]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[340]++
+					if SaveRAM[340]>1
+						SaveRAM[340]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[340]
+					case 0
+						SetMusicTrack("US/R7D.ogg",0,1)
+						break
+					case 1
+						SetMusicTrack("JP/R7D.ogg",1,1)
+						break
+					endswitch
+					PlayMusic(SaveRAM[340])
+					Object[+4].Value2=1
+				endif
+				break
+			case 25 // RMS Good Future
+				if KeyPress.Left==1
+					SaveRAM[341]--
+						if SaveRAM[341]<0
+							SaveRAM[341]=2
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[341]++
+					if SaveRAM[341]>2
+						SaveRAM[341]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[341]
+					case 0
+						SetMusicTrack("US/R7D.ogg",0,1)// Arrange
+						break
+					case 1
+						SetMusicTrack("JP/R7D.ogg",1,1)// JP
+						break
+					case 2
+						SetMusicTrack("US/R7C.ogg",2,1)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[341])
+					Object[+4].Value2=1
+				endif
+				break
+			case 26 // RMS Bad Future
+				if KeyPress.Left==1
+					SaveRAM[342]--
+						if SaveRAM[342]<0
+							SaveRAM[342]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[342]++
+					if SaveRAM[342]>1
+						SaveRAM[342]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[342]
+					case 0
+						SetMusicTrack("US/R7D.ogg",0,1)
+						break
+					case 1
+						SetMusicTrack("JP/R7D.ogg",1,1)
+						break
+						endswitch
+					PlayMusic(SaveRAM[342])
+					Object[+4].Value2=1
+				endif
+				break
+			case 27 // Switch on Win
+				if KeyPress.Left==1
+					SaveRAM[343]--
+					if SaveRAM[343]==0
+						SaveRAM[343]=1
+					endif
+				endif
+				if KeyPress.Right==1
+					SaveRAM[343]++
+					if SaveRAM[343]==0
+						SaveRAM[343]=1
+					endif	
+				endif
+				break	
+			case 28 // Victory Music
+				if KeyPress.Left==1
+					SaveRAM[344]--
+						if SaveRAM[344]<0
+							SaveRAM[344]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[344]++
+					if SaveRAM[344]>1
+						SaveRAM[344]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[344]
+					case 0
+						SetMusicTrack("JP/R7C.ogg",0,103060)// JP
+						break
+					case 1
+						SetMusicTrack("US/R7C.ogg",1,1)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[344])
+					Object[+4].Value2=1
+				endif
+				break
+			case 29 // MM Present
+				if KeyPress.Left==1
+					SaveRAM[345]--
+						if SaveRAM[345]<0
+							SaveRAM[345]=2
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[345]++
+					if SaveRAM[345]>2
+						SaveRAM[345]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[345]
+					case 0
+						SetMusicTrack("US/R8A.ogg",0,1)// US
+						break
+					case 1
+						SetMusicTrack("UN/R8A.ogg",1,1)// Hybrid
+						break
+					case 2
+						SetMusicTrack("JP/R8A.ogg",2,1)// JP
+						break
+					endswitch
+					PlayMusic(SaveRAM[345])
+					Object[+4].Value2=1
+				endif
+				break
+			case 30 // MM Past
+				if KeyPress.Left==1
+					SaveRAM[346]--
+						if SaveRAM[346]<0
+							SaveRAM[346]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[346]++
+					if SaveRAM[346]>1
+						SaveRAM[346]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[346]
+					case 0
+						SetMusicTrack("AR/R8B.ogg",0,1)// Hybrid
+						break
+					case 1
+						SetMusicTrack("R8B.ogg",1,145748)// JP
+						break
+					endswitch
+					PlayMusic(SaveRAM[346])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 31 // MM Good Future
+				if KeyPress.Left==1
+					SaveRAM[347]--
+						if SaveRAM[347]<0
+							SaveRAM[347]=2
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[347]++
+					if SaveRAM[347]>2
+						SaveRAM[347]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[347]
+					case 0
+						SetMusicTrack("US/R7C.ogg",0,1)// Arrange
+						break
+					case 1
+						SetMusicTrack("JP/R8C.ogg",1,1)// JP
+						break
+					case 2
+						SetMusicTrack("US/R8C.ogg",2,1)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[347])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 32 // MM Bad Future
+				if KeyPress.Left==1
+					SaveRAM[348]--
+						if SaveRAM[348]<0
+							SaveRAM[348]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[348]++
+					if SaveRAM[348]>1
+						SaveRAM[348]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[348]
+					case 0
+						SetMusicTrack("US/R8D.ogg",0,1)// US
+						break
+					case 1
+						SetMusicTrack("JP/R8D.ogg",1,1)// JP
+						break
+					endswitch
+					PlayMusic(SaveRAM[348])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 33 // Title Screen
+				if KeyPress.Left==1
+					SaveRAM[364]--
+						if SaveRAM[364]<0
+							SaveRAM[364]=2
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[364]++
+					if SaveRAM[364]>2
+						SaveRAM[364]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[364]
+					case 0
+						SetMusicTrack("US/TitleScreen.ogg",0,0)
+						break
+					case 1
+						SetMusicTrack("JP/TitleScreen.ogg",1,0)// JP
+						break
+					case 2
+						SetMusicTrack("JP/TitleScreen-Beta.ogg",2,538955)
+						break
+					endswitch
+					PlayMusic(SaveRAM[364])
+					Object[+4].Value2=1
+				endif
+				break
+			case 34 // Special Stages
+				if KeyPress.Left==1
+					SaveRAM[349]--
+						if SaveRAM[349]<0
+							SaveRAM[349]=3
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[349]++
+					if SaveRAM[349]>3
+						SaveRAM[349]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[349]
+					case 0
+						SetMusicTrack("UN/SpecialStage.ogg",0,202783)// Unified
+						break
+					case 1
+						SetMusicTrack("AR/SpecialStage.ogg",1,1)// Arrange
+						break
+					case 2
+						SetMusicTrack("JP/SpecialStage.ogg",2,271392)// JP
+						break
+					case 3
+						SetMusicTrack("US/SpecialStage.ogg",3,202783)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[349])
+					Object[+4].Value2=1
+				endif
+				break
+			case 35 // Boss Theme
+				if KeyPress.Left==1
+					SaveRAM[350]--
+						if SaveRAM[350]<0
+							SaveRAM[350]=2
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[350]++
+					if SaveRAM[350]>2
+						SaveRAM[350]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[350]
+					case 0
+						SetMusicTrack("AR/Boss.ogg",0,1)// Hybrid P+A
+						break
+					case 1
+						SetMusicTrack("JP/Boss.ogg",1,1)// JP
+						break
+					case 2
+						SetMusicTrack("US/Boss.ogg",2,1)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[350])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 36 // Final Boss Theme
+				if KeyPress.Left==1
+					SaveRAM[351]--
+						if SaveRAM[351]<0
+							SaveRAM[351]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[351]++
+					if SaveRAM[351]>1
+						SaveRAM[351]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[351]
+					case 0
+						SetMusicTrack("US/FinalBoss.ogg",0,1)
+						break
+					case 1
+						SetMusicTrack("JP/FinalBoss.ogg",1,1)
+						break
+					endswitch
+					PlayMusic(SaveRAM[351])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 37 // Zone Complete
+				if KeyPress.Left==1
+					SaveRAM[352]--
+						if SaveRAM[352]<0
+							SaveRAM[352]=2
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[352]++
+					if SaveRAM[352]>2
+						SaveRAM[352]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[352]
+					case 0
+						SetMusicTrack("AR/ZoneComplete.ogg",0,0)// Hybrid P+A
+						break
+					case 1
+						SetMusicTrack("JP/ZoneComplete.ogg",1,0)// JP
+						break
+					case 2
+						SetMusicTrack("US/ZoneComplete.ogg",2,0)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[352])
+					Object[+4].Value2=1
+				endif
+				break
+			case 38 // Invincibility
+				if KeyPress.Left==1
+					SaveRAM[353]--
+						if SaveRAM[353]<0
+							SaveRAM[353]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[353]++
+					if SaveRAM[353]>1
+						SaveRAM[353]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[353]
+					case 0
+						SetMusicTrack("JP/Invincibility.ogg",0,0)// JP
+						break
+					case 1
+						SetMusicTrack("US/Invincibility.ogg",1,0)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[353])
+					Object[+4].Value2=1
+				endif
+				break
+			case 39 // Speed Shoes
+				if KeyPress.Left==1
+					SaveRAM[354]--
+						if SaveRAM[354]<0
+							SaveRAM[354]=3
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[354]++
+					if SaveRAM[354]>3
+						SaveRAM[354]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[354]
+						case 0
+						SetMusicTrack("AR/SpeedShoes.ogg",0,0)// Arrange
+						break
+					case 1
+						SetMusicTrack("JP/SpeedShoes.ogg",1,0)// Unified
+						break
+					case 2
+						SetMusicTrack("JP/SpeedShoes-Beta.ogg",2,0)// JP
+						break
+					case 3
+						SetMusicTrack("US/SpeedShoes.ogg",3,0)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[354])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 40 // Game Over
+				if KeyPress.Left==1
+					SaveRAM[355]--
+						if SaveRAM[355]<0
+							SaveRAM[355]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[355]++
+					if SaveRAM[355]>1
+						SaveRAM[355]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[355]
+					case 0
+						SetMusicTrack("US/GameOver.ogg",0,0)
+						break
+					case 1
+						SetMusicTrack("JP/GameOver.ogg",1,0)
+						break
+					endswitch
+					PlayMusic(SaveRAM[355])
+					Object[+4].Value2=1
+				endif
+				break				
+			case 41 // Main Menu
+				if KeyPress.Left==1
+					SaveRAM[356]--
+						if SaveRAM[356]<0
+							SaveRAM[356]=3
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)
+					switch SaveRAM[356]
+						case 0
+							SetMusicTrack("JP/Boss.ogg",0,1)// Arrange
+							break
+						case 1
+							SetMusicTrack("JP/R7A.ogg",0,000001)// Unified
+							break						
+						case 2
+							SetMusicTrack("JP/SpecialStage.ogg",0,237484)// JP
+							break
+						case 3
+							SetMusicTrack("US/SpecialStage.ogg",0,270972)// US
+							break
+					endswitch
+					PlayMusic(Options.Soundtrack)					
+				endif
+				if KeyPress.Right==1
+					SaveRAM[356]++
+					if SaveRAM[356]>3
+						SaveRAM[356]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)
+					switch SaveRAM[356]
+						case 0
+							SetMusicTrack("JP/Boss.ogg",0,1)// Arrange
+							break
+						case 1
+							SetMusicTrack("JP/R7A.ogg",0,000001)
+							break						
+						case 2
+							SetMusicTrack("JP/SpecialStage.ogg",0,237484)// JP
+							break
+						case 3
+							SetMusicTrack("US/SpecialStage.ogg",0,270972)// US
+							break
+					endswitch
+					PlayMusic(Options.Soundtrack)
+				endif
+				break					
+			case 42 // Time Attack
+				if KeyPress.Left==1
+					SaveRAM[358]--
+						if SaveRAM[358]<0
+							SaveRAM[358]=2
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[358]++
+					if SaveRAM[358]>2
+						SaveRAM[358]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[358]
+						case 0
+							SetMusicTrack("JP/TitleScreen.ogg",0,000001)// Hybrid P+A
+							break
+						case 1
+							SetMusicTrack("JP/TimeAttack.ogg",1,100512)// JP
+							break
+						case 2
+							SetMusicTrack("US/DAGarden.ogg",2,117382)// US
+							break						
+					endswitch
+					PlayMusic(SaveRAM[358])
+					Object[+4].Value2=1
+				endif
+				break		
+			case 43 // D. A. Garden
+				if KeyPress.Left==1
+					SaveRAM[360]--
+						if SaveRAM[360]<0
+							SaveRAM[360]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[360]++
+					if SaveRAM[360]>1
+						SaveRAM[360]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[360]
+					case 0
+						SetMusicTrack("JP/DAGarden.ogg",0,1)// JP
+						break
+					case 1
+						SetMusicTrack("US/DAGarden.ogg",1,117382)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[360])
+					Object[+4].Value2=1
+				endif
+				break
+			case 44 // Secrets
+				if KeyPress.Left==1
+					SaveRAM[365]--
+						if SaveRAM[365]<0
+							SaveRAM[365]=3
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[365]++
+					if SaveRAM[365]>3
+						SaveRAM[365]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[365]
+					case 0// Arrange
+						Rand(TempValue5,6)
+						switch TempValue5
+							case 0
+								SetMusicTrack("AR/Boss.ogg",0,1)
+								break
+							case 1
+								SetMusicTrack("JP/Boss.ogg",0,1)
+								break
+							case 2
+								SetMusicTrack("JP/R1C.ogg",0,1)
+								break
+							case 3
+								SetMusicTrack("JP/R7A.ogg",0,1)
+								break
+							case 4
+								SetMusicTrack("AR/Credits.ogg",0,1)
+								break
+							case 5
+								SetMusicTrack("JP/R5C.ogg",0,1)
+								break
+						endswitch
+						break
+					case 1// Unified
+						Rand(TempValue5,6)
+						switch TempValue5
+							case 0
+								SetMusicTrack("US/FinalBoss.ogg",1,1)
+								break
+							case 1
+								SetMusicTrack("US/FinalBoss.ogg",1,1)
+								break
+							case 2
+								SetMusicTrack("JP/R1C.ogg",1,1)
+								break
+							case 3
+								SetMusicTrack("JP/R7A.ogg",1,1)
+								break
+							case 4
+								SetMusicTrack("AR/Credits.ogg",1,1)
+								break
+							case 5
+								SetMusicTrack("US/R5C.ogg",1,1)
+								break
+						endswitch
+						break
+					case 2// JP
+						Rand(TempValue5,6)
+						switch TempValue5
+							case 0
+								SetMusicTrack("JP/FinalBoss.ogg",2,1)
+								break
+							case 1
+								SetMusicTrack("JP/Boss.ogg",2,1)
+								break
+							case 2
+								SetMusicTrack("JP/R1C.ogg",2,142902)
+								break
+							case 3
+								SetMusicTrack("JP/R8A.ogg",2,1)
+								break
+							case 4
+								SetMusicTrack("JP/R5C.ogg",2,1)
+								break
+							case 5
+								SetMusicTrack("JP/R5C.ogg",2,1)
+								break
+						endswitch
+						break
+					case 3// US
+						Rand(TempValue5,6)
+						switch TempValue5
+							case 0
+								SetMusicTrack("US/FinalBoss.ogg",3,1)
+								break
+							case 1
+								SetMusicTrack("US/Boss.ogg",3,1)
+								break
+							case 2
+								SetMusicTrack("US/R1C.ogg",3,152346)
+								break
+							case 3
+								SetMusicTrack("US/R8A.ogg",3,1)
+								break
+							case 4
+								SetMusicTrack("US/R5C.ogg",3,705830)
+								break
+							case 5
+								SetMusicTrack("US/R5C.ogg",3,705830)
+								break
+						endswitch
+						break					
+					endswitch
+					PlayMusic(SaveRAM[365])
+					Object[+4].Value2=1
+				endif
+				break
+			case 45 // Opening Video
+				if KeyPress.Left==1
+					SaveRAM[361]--
+						if SaveRAM[361]<0
+							SaveRAM[361]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[361]++
+					if SaveRAM[361]>1
+						SaveRAM[361]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[361]
+					case 0
+						SetMusicTrack("JP/Opening.ogg",0,1)// JP
+						break
+					case 1
+						SetMusicTrack("US/Opening.ogg",1,1)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[361])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 46 // Closing Video
+				if KeyPress.Left==1
+					SaveRAM[362]--
+						if SaveRAM[362]<0
+							SaveRAM[362]=1
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[362]++
+					if SaveRAM[362]>1
+						SaveRAM[362]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[362]
+					case 0
+						SetMusicTrack("JP/Closing.ogg",0,1)// JP
+						break
+					case 1
+						SetMusicTrack("US/Closing.ogg",1,1)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[362])
+					Object[+4].Value2=1
+				endif
+				break	
+			case 47 // Staff Credits
+				if KeyPress.Left==1
+					SaveRAM[363]--
+						if SaveRAM[363]<0
+							SaveRAM[363]=2
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[363]++
+					if SaveRAM[363]>2
+						SaveRAM[363]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[363]
+					case 0
+						SetMusicTrack("AR/Credits.ogg",0,1)// Hybrid P+A
+						break
+					case 1
+						SetMusicTrack("JP/TimeAttack.ogg",1,100512)// JP
+						break
+					case 2
+						SetMusicTrack("US/DAGarden.ogg",2,117382)// US
+						break
+					endswitch
+					PlayMusic(SaveRAM[363])
+					Object[+4].Value2=1
+				endif
+				break
+			case 48 // Results Summary
+				if KeyPress.Left==1
+					SaveRAM[366]--
+						if SaveRAM[366]<0
+							SaveRAM[366]=2
+						endif
+					WriteSaveRAM()					
+					PlaySfx(23,0)								
+				endif
+				if KeyPress.Right==1
+					SaveRAM[366]++
+					if SaveRAM[366]>2
+						SaveRAM[366]=0
+					endif
+					WriteSaveRAM()
+					PlaySfx(23,0)	
+				endif
+				if KeyPress.ButtonA==1
+					switch SaveRAM[366]
+						case 0
+							SetMusicTrack("Results.ogg",0,1)
+							break						
+						case 1
+							SetMusicTrack("JP/DAGarden.ogg",1,1)
+							break
+						case 2
+							SetMusicTrack("US/Invincibility.ogg",2,1)
+							break
+					endswitch
+					PlayMusic(SaveRAM[366])
+					Object[+4].Value2=1
+				endif
+				break
+			endswitch
+		if KeyPress.ButtonB==1
+			Object.State=11
+			Object.Value0=248
+			switch SaveRAM[356]
+			case 0
+				SetMusicTrack("JP/Boss.ogg",0,1)
+				break
+			case 1
+				SetMusicTrack("JP/R7A.ogg",0,000001)
+				break						
+			case 2
+				SetMusicTrack("JP/SpecialStage.ogg",0,237484)
+				break
+			case 3
+				SetMusicTrack("US/SpecialStage.ogg",0,270972)
+				break
+			endswitch
+			SaveRAM[32]=1
+			WriteSaveRAM()
+			if Object[+4].Value2>0
+				PlayMusic(Options.Soundtrack)			
+			endif
+			PlayStageSfx(1,0)
+			TempValue1=0
+		endif
+		break
+	case 11
+		if TempValue7>=Screen.CenterX
+			TempValue7-=3
+		endif
+		if TempValue7<Screen.CenterX
+			TempValue7-=3
+		endif
+		if Object.Value0>0
+			Object.Alpha=Object.Value0
+			Object.Value0-=20
+		else
+			Object.Type=TypeName[BlankObject]
+			Object[-1].State=3
+			Object[34].State=1
+			Object[35].State=1
+			Object[36].State=1
+			Object[37].State=1
+			Object[38].State=1
+			Object[39].State=1
+			Object[40].State=1
+			Object[41].State=1
+			Object[42].State=1
+			Object[33].State=1
+			Object[33].PropertyValue=5
+		endif
+		break
+	endswitch
+endsub
+
+
+sub ObjectDraw
+	// Drawing DJ 
+	if Object[+4].Value1 == 0
+		TempValue0=Object.Value3
+		TempValue0>>=5	
+		TempValue6=Screen.CenterX
+		TempValue7=Screen.CenterY
+		//TempValue6-=98
+		TempValue7+=25
+		TempValue0+=141
+		DrawSpriteScreenFX(TempValue0,FX_INK,TempValue6,TempValue7)//185
+		TempValue0-=82
+		TempValue6-=22
+		TempValue7+=0
+		DrawSpriteScreenFX(TempValue0,FX_INK,TempValue6,TempValue7)//185
+		TempValue0+=2
+		TempValue6+=51
+		TempValue7-=30
+		DrawSpriteScreenFX(TempValue0,FX_INK,TempValue6,TempValue7)//185
+		TempValue0-=185
+		Object.Value3++
+		Object.Value3&=63
+	else
+		TempValue0=Object.Value3
+		TempValue0>>=5	
+		TempValue6=Screen.CenterX
+		TempValue7=Screen.CenterY
+		TempValue6-=98
+		TempValue7+=25
+		TempValue0+=57
+		DrawSpriteScreenFX(TempValue0,FX_INK,TempValue6,TempValue7)//185
+		TempValue0+=2
+		TempValue6+=50
+		TempValue7+=35
+		DrawSpriteScreenFX(TempValue0,FX_INK,TempValue6,TempValue7)//185
+		TempValue0+=2
+		TempValue6-=101
+		TempValue7-=62
+		DrawSpriteScreenFX(TempValue0,FX_INK,TempValue6,TempValue7)//185
+		TempValue0-=185
+		Object.Value3++
+		Object.Value3&=63
+	end if
+
+	switch Object.State
+	case 0
+	case 1
+	case 2
+	case 3
+	case 8
+	case 10
+		Object.YPos=Screen.CenterY
+		Object.YPos-=87
+		ArrayPos0=0
+		CallFunction(OptionsMenuC_Function6)
+		Object.YPos+=40
+		ArrayPos0++
+		CallFunction(OptionsMenuC_Function6)
+		Object.YPos+=40
+		ArrayPos0++
+		CallFunction(OptionsMenuC_Function6)
+		Object.YPos+=40
+		ArrayPos0++
+		CallFunction(OptionsMenuC_Function6)
+		break
+	case 4
+	case 5
+	case 6
+	case 9
+	case 11
+		ArrayPos0=Object.Value1
+		TempValue0=Screen.CenterX
+		TempValue1=Screen.CenterX
+		TempValue0-=70
+		TempValue1+=70
+#platform: Standard	
+		switch Object[+4].Value1
+		case 0 //Soundtrack			//DrawSpriteScreenFX(160,FX_INK,Object.XPos,Object.YPos)//Icon
+			//DrawSpriteScreenFX(161,FX_INK,Object.XPos,Object.YPos)//Border
+			//DrawSpriteScreenFX(162,FX_INK,Object.XPos,Object.YPos)//Info
+			TempValue0-=25
+			DrawSpriteScreenFX(50,FX_INK,TempValue0,145) // Soundtrack	
+			TempValue0+=25
+			TempValue1-=10
+			DrawSpriteScreenFX(35,FX_INK,TempValue1,126) // Up Arrow			
+			DrawSpriteScreenFX(36,FX_INK,TempValue1,165) // Down Arrow
+			TempValue1+=10			
+			break
+		case 1 //PP Present	
+			DrawSpriteScreenFX(35,FX_INK,TempValue0,62)
+			DrawSpriteScreenFX(22,FX_INK,TempValue0,78)		
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 2 //PP Past		
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(23,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 3 //PP G Future		
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(24,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 4 //PP B Future	
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(25,FX_INK,TempValue0,150)
+			DrawSpriteScreenFX(36,FX_INK,TempValue0,165)
+			break
+		case 5 //CC Present	
+			DrawSpriteScreenFX(35,FX_INK,TempValue0,62)
+			DrawSpriteScreenFX(22,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 6 //CC Past		
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(23,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 7 //CC G Future		
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(24,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 8 //CC B Future	
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(25,FX_INK,TempValue0,150)
+			DrawSpriteScreenFX(36,FX_INK,TempValue0,165)
+			break
+		case 9 //TT Present
+			DrawSpriteScreenFX(35,FX_INK,TempValue0,62)
+			DrawSpriteScreenFX(22,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 10 //TT Past		
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(23,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 11 //TT G Future		
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(24,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 12 //TT B Future	
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(25,FX_INK,TempValue0,150)
+			DrawSpriteScreenFX(36,FX_INK,TempValue0,165)
+			break
+		case 13 //TT Present
+			DrawSpriteScreenFX(35,FX_INK,TempValue0,62)
+			DrawSpriteScreenFX(22,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 14 //TT Past		
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(23,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 15 //TT G Future		
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(24,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 16 //TT B Future	
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(25,FX_INK,TempValue0,150)
+			DrawSpriteScreenFX(36,FX_INK,TempValue0,165)
+			break
+		case 17 //WW Present
+			DrawSpriteScreenFX(35,FX_INK,TempValue0,62)
+			DrawSpriteScreenFX(22,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 18 //WW Past		
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(23,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 19 //WW G Future		
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(24,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 20 //WW B Future	
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(25,FX_INK,TempValue0,150)
+			DrawSpriteScreenFX(36,FX_INK,TempValue0,165)
+			break
+		case 21 //SS Present
+			DrawSpriteScreenFX(35,FX_INK,TempValue0,62)
+			DrawSpriteScreenFX(22,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 22 //SS Past		
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(23,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 23 //SS G Future		
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(24,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 24 //SS B Future	
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(25,FX_INK,TempValue0,150)
+			DrawSpriteScreenFX(36,FX_INK,TempValue0,165)
+			break
+		case 25 //RMS G Future	
+			DrawSpriteScreenFX(35,FX_INK,TempValue0,62)		
+			DrawSpriteScreenFX(24,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(86,FX_INK,TempValue0,126)
+			if saveRAM[343]==0
+				DrawSpriteScreenFX(46,FX_INK,TempValue0,150)
+			else
+				DrawSpriteScreenFX(87,FX_INK,TempValue0,150)
+			endif
+			break
+		case 26 //RMS B Future		
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(25,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(86,FX_INK,TempValue0,126)
+			if saveRAM[343]==0
+				DrawSpriteScreenFX(46,FX_INK,TempValue0,150)
+			else
+				DrawSpriteScreenFX(87,FX_INK,TempValue0,150)
+			endif
+			break
+		case 27 //Switch Track		
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(88,FX_INK,TempValue0,126)
+			if saveRAM[343]==0
+				DrawSpriteScreenFX(46,FX_INK,TempValue0,150)
+				DrawSpriteScreenFX(36,FX_INK,TempValue0,165)
+			else
+				DrawSpriteScreenFX(87,FX_INK,TempValue0,150)
+			endif
+			break
+		case 28 //Victory Music
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(86,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(89,FX_INK,TempValue0,150)
+			DrawSpriteScreenFX(36,FX_INK,TempValue0,165)
+			break
+		case 29 //MM Present
+			DrawSpriteScreenFX(35,FX_INK,TempValue0,62)
+			DrawSpriteScreenFX(22,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 30 //MM Past		
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(23,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 31 //MM G Future		
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(24,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(21,FX_INK,TempValue0,150)
+			break
+		case 32 //MM B Future	
+			DrawSpriteScreenFX(18,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(19,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(20,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(25,FX_INK,TempValue0,150)
+			DrawSpriteScreenFX(36,FX_INK,TempValue0,165)
+			break
+		case 33 //Title Screen
+			DrawSpriteScreenFX(35,FX_INK,TempValue0,62)
+			DrawSpriteScreenFX(117,FX_INK,TempValue0,78)		
+			DrawSpriteScreenFX(91,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(94,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(95,FX_INK,TempValue0,150)
+			break
+		case 34 //Special Stages
+			DrawSpriteScreenFX(116,FX_INK,TempValue0,78)	
+			DrawSpriteScreenFX(92,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(94,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(95,FX_INK,TempValue0,150)
+			break
+		case 35 //Boss Theme
+			DrawSpriteScreenFX(116,FX_INK,TempValue0,78)			
+			DrawSpriteScreenFX(91,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(96,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(95,FX_INK,TempValue0,150)
+			break
+		case 36 //Final Boss Theme
+			DrawSpriteScreenFX(116,FX_INK,TempValue0,78)		
+			DrawSpriteScreenFX(91,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(94,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(97,FX_INK,TempValue0,150)
+			DrawSpriteScreenFX(36,FX_INK,TempValue0,165)
+			break
+		case 37 //Zone Complete
+			DrawSpriteScreenFX(35,FX_INK,TempValue0,62)
+			DrawSpriteScreenFX(99,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(100,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(101,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(102,FX_INK,TempValue0,150)
+			break
+		case 38 //Invincibility
+			DrawSpriteScreenFX(98,FX_INK,TempValue0,78)		
+			DrawSpriteScreenFX(103,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(101,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(102,FX_INK,TempValue0,150)
+			break
+		case 39 //Speed Shoes	
+			DrawSpriteScreenFX(98,FX_INK,TempValue0,78)		
+			DrawSpriteScreenFX(100,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(104,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(102,FX_INK,TempValue0,150)
+			break
+		case 40 //Game Over
+			DrawSpriteScreenFX(98,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(100,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(101,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(105,FX_INK,TempValue0,150)
+			DrawSpriteScreenFX(36,FX_INK,TempValue0,165)
+			break
+		case 41 //Main Menu
+			DrawSpriteScreenFX(35,FX_INK,TempValue0,62)
+			DrawSpriteScreenFX(74,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(72,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(108,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(41,FX_INK,TempValue0,150)
+			break
+		case 42 //Time Attack		
+			DrawSpriteScreenFX(128,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(76,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(108,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(41,FX_INK,TempValue0,150)
+			break
+		case 43 //D.A. Garden
+			DrawSpriteScreenFX(128,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(72,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(112,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(41,FX_INK,TempValue0,150)			
+			break
+		case 44 //Secrets			
+			DrawSpriteScreenFX(128,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(72,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(108,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(42,FX_INK,TempValue0,150)
+			DrawSpriteScreenFX(36,FX_INK,TempValue0,165)
+			break
+		case 45 //Opening Video
+			DrawSpriteScreenFX(35,FX_INK,TempValue0,62)
+			DrawSpriteScreenFX(113,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(110,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(111,FX_INK,TempValue0,126)		
+			DrawSpriteScreenFX(71,FX_INK,TempValue0,150)
+			break
+		case 46 //Closing Video			
+			DrawSpriteScreenFX(109,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(114,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(111,FX_INK,TempValue0,126)		
+			DrawSpriteScreenFX(71,FX_INK,TempValue0,150)
+			break
+		case 47 //Staff Credits			
+			DrawSpriteScreenFX(109,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(110,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(115,FX_INK,TempValue0,126)		
+			DrawSpriteScreenFX(71,FX_INK,TempValue0,150)
+			break
+		case 48 //Results Summary		
+			DrawSpriteScreenFX(109,FX_INK,TempValue0,78)
+			DrawSpriteScreenFX(110,FX_INK,TempValue0,102)
+			DrawSpriteScreenFX(111,FX_INK,TempValue0,126)
+			DrawSpriteScreenFX(75,FX_INK,TempValue0,150)
+			DrawSpriteScreenFX(36,FX_INK,TempValue0,165)
+			break
+		endswitch
+#endplatform
+
+#platform: Mobile
+	if Options.PhysicalControls==1
+			switch Object[+4].Value1
+			case 0
+				DrawSpriteScreenFX(32,FX_INK,TempValue0,91)
+				DrawSpriteScreenFX(33,FX_INK,TempValue0,121)
+				DrawSpriteScreenFX(35,FX_INK,TempValue0,151)
+				break
+			case 1
+				DrawSpriteScreenFX(31,FX_INK,TempValue0,91)
+				DrawSpriteScreenFX(34,FX_INK,TempValue0,121)
+				DrawSpriteScreenFX(35,FX_INK,TempValue0,151)
+				break
+			case 2
+				DrawSpriteScreenFX(31,FX_INK,TempValue0,91)
+				DrawSpriteScreenFX(33,FX_INK,TempValue0,121)
+				DrawSpriteScreenFX(36,FX_INK,TempValue0,151)
+				break
+			endswitch
+		else
+			DrawSpriteScreenFX(31,FX_INK,TempValue0,91)
+			DrawSpriteScreenFX(33,FX_INK,TempValue0,121)
+			DrawSpriteScreenFX(35,FX_INK,TempValue0,151)
+		endif
+#endplatform
+	TempValue6=Screen.CenterX
+	TempValue6+=54
+	TempValue6-=16
+	if Object[+4].Value1<1 
+	TempValue0=Screen.CenterX
+	if Object[+4].Value1 == 0 
+		TempValue0+=40
+		DrawSpriteScreenFX(28,FX_INK,TempValue0,142)
+	end if
+	CallFunction(OptionsMenuC_Function6)
+	endif
+	
+	if Object[+4].Value1>=1 //Custom Soundtrack Page 1
+	if Object[+4].Value1<5
+	TempValue0=Screen.CenterX
+	TempValue0-=181
+	DrawSpriteScreenFX(26,FX_INK,TempValue0,41)
+	TempValue0=Screen.CenterX
+	switch SaveRAM[317] // PP Present
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(29,FX_INK,TempValue0,74)
+			if Object[+4].Value1==1
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(30,FX_INK,TempValue0,74)
+			if Object[+4].Value1==1
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,74)
+			if Object[+4].Value1==1
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 3
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,74)
+			if Object[+4].Value1==1
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[318] // PP Past
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(68,FX_INK,TempValue0,98)
+			if Object[+4].Value1==2
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,98)
+			if Object[+4].Value1==2
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(129,FX_INK,TempValue0,98)
+			if Object[+4].Value1==2
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break	
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[319] // PP Good Future
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,122)
+			if Object[+4].Value1==3
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,122)
+			if Object[+4].Value1==3
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[320] // PP Bad Future
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,146)
+			if Object[+4].Value1==4
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,146)
+			if Object[+4].Value1==4
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	endif
+	endif
+	
+	if Object[+4].Value1>=5 //Custom Soundtrack Page 2
+	if Object[+4].Value1<9
+	TempValue0=Screen.CenterX
+	TempValue0-=181
+	DrawSpriteScreenFX(80,FX_INK,TempValue0,41)
+	TempValue0=Screen.CenterX
+	switch SaveRAM[321] // CC Present
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,74)
+			if Object[+4].Value1==5
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,74)
+			if Object[+4].Value1==5
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[322] // CC Past
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,98)
+			if Object[+4].Value1==6
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[323] // CC Good Future
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(68,FX_INK,TempValue0,122)
+			if Object[+4].Value1==7
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,122)
+			if Object[+4].Value1==7
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,122)
+			if Object[+4].Value1==7
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[324] // CC Bad Future
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,146)
+			if Object[+4].Value1==8
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,146)
+			if Object[+4].Value1==8
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	endif
+	endif
+	
+	if Object[+4].Value1>=9 //Custom Soundtrack Page 3
+	if Object[+4].Value1<13
+	TempValue0=Screen.CenterX
+	TempValue0-=181
+	DrawSpriteScreenFX(81,FX_INK,TempValue0,41)
+	TempValue0=Screen.CenterX
+	switch SaveRAM[325] // TT Present
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,74)
+			if Object[+4].Value1==9
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,74)
+			if Object[+4].Value1==9
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[326] // TT Past
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(68,FX_INK,TempValue0,98)
+			if Object[+4].Value1==10
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,98)
+			if Object[+4].Value1==10
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[327] // TT Good Future
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(68,FX_INK,TempValue0,122)
+			if Object[+4].Value1==11
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,122)
+			if Object[+4].Value1==11
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,122)
+			if Object[+4].Value1==11
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[328] // TT Bad Future
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,146)
+			if Object[+4].Value1==12
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,146)
+			if Object[+4].Value1==12
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	endif
+	endif
+	
+	if Object[+4].Value1>=13 //Custom Soundtrack Page 4
+	if Object[+4].Value1<17
+	TempValue0=Screen.CenterX
+	TempValue0-=181
+	DrawSpriteScreenFX(82,FX_INK,TempValue0,41)
+	TempValue0=Screen.CenterX
+	switch SaveRAM[329] // QQ Present
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,74)
+			if Object[+4].Value1==13
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,74)
+			if Object[+4].Value1==13
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[330] // QQ Past
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,98)
+			if Object[+4].Value1==14
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[331] // QQ Good Future
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,122)
+			if Object[+4].Value1==15
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,122)
+			if Object[+4].Value1==15
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[332] // QQ Bad Future
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,146)
+			if Object[+4].Value1==16
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,146)
+			if Object[+4].Value1==16
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	endif
+	endif
+	
+	if Object[+4].Value1>=17 //Custom Soundtrack Page 5
+	if Object[+4].Value1<21
+	TempValue0=Screen.CenterX
+	TempValue0-=181
+	DrawSpriteScreenFX(83,FX_INK,TempValue0,41)
+	TempValue0=Screen.CenterX
+	switch SaveRAM[333] // WW Present
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,74)
+			if Object[+4].Value1==17
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,74)
+			if Object[+4].Value1==17
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[334] // WW Past
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(29,FX_INK,TempValue0,98)
+			if Object[+4].Value1==18
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(30,FX_INK,TempValue0,98)
+			if Object[+4].Value1==18
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,98)
+			if Object[+4].Value1==18
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[335] // WW Good Future
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(68,FX_INK,TempValue0,122)
+			if Object[+4].Value1==19
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,122)
+			if Object[+4].Value1==19
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,122)
+			if Object[+4].Value1==19
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[336] // WW Bad Future
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,146)
+			if Object[+4].Value1==20
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,146)
+			if Object[+4].Value1==20
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	endif
+	endif
+	
+	if Object[+4].Value1>=21 //Custom Soundtrack Page 6
+	if Object[+4].Value1<25
+	TempValue0=Screen.CenterX
+	TempValue0-=181
+	DrawSpriteScreenFX(84,FX_INK,TempValue0,41)
+	TempValue0=Screen.CenterX
+	switch SaveRAM[337] // SS Present
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,74)
+			if Object[+4].Value1==21
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,74)
+			if Object[+4].Value1==21
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[338] // SS Past
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(68,FX_INK,TempValue0,98)
+			if Object[+4].Value1==22
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,98)
+			if Object[+4].Value1==22
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[339] // SS Good Future
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,122)
+			if Object[+4].Value1==23
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,122)
+			if Object[+4].Value1==23
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[340] // SS Bad Future
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,146)
+			if Object[+4].Value1==24
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,146)
+			if Object[+4].Value1==24
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	endif
+	endif
+	
+	if Object[+4].Value1>=25 //Custom Soundtrack Page 7
+	if Object[+4].Value1<29
+	TempValue0=Screen.CenterX
+	TempValue0-=181
+	DrawSpriteScreenFX(90,FX_INK,TempValue0,41)
+	TempValue0=Screen.CenterX
+	switch SaveRAM[341] // Racing Metal Good Future
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(68,FX_INK,TempValue0,74)
+			if Object[+4].Value1==25
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,74)
+			if Object[+4].Value1==25
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,74)
+			if Object[+4].Value1==25
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[342] // Racing Metal Bad Future
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,98)
+			if Object[+4].Value1==26
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,98)
+			if Object[+4].Value1==26
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+			TempValue0+=60
+			DrawSpriteScreenFX(134,FX_INK,TempValue0,122)
+	TempValue0=Screen.CenterX
+	switch SaveRAM[344] // Victory Music
+		case 0
+			if SaveRAM[343]==0
+				TempValue0+=60
+				DrawSpriteScreenFX(43,FX_INK,TempValue0,146)
+			else
+				TempValue0+=60
+				DrawSpriteScreenFX(65,FX_INK,TempValue0,146)
+				if Object[+4].Value1==28
+					TempValue0-=10
+					DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+					TempValue0+=10
+				endif
+			endif
+			break
+		case 1
+			if SaveRAM[343]==0
+				TempValue0+=60
+				DrawSpriteScreenFX(43,FX_INK,TempValue0,146)
+			else
+				TempValue0+=60
+				DrawSpriteScreenFX(32,FX_INK,TempValue0,146)
+				if Object[+4].Value1==28
+					TempValue0-=10
+					DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+					TempValue0+=10
+				endif
+			endif
+			break
+	endswitch
+	endif
+	endif
+	
+	if Object[+4].Value1>=29 //Custom Soundtrack Page 8
+	if Object[+4].Value1<33
+	TempValue0=Screen.CenterX
+	TempValue0-=181
+	DrawSpriteScreenFX(85,FX_INK,TempValue0,41)
+	TempValue0=Screen.CenterX
+	switch SaveRAM[345] // MM Present
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,74)
+			if Object[+4].Value1==29
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(68,FX_INK,TempValue0,74)
+			if Object[+4].Value1==29
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,74)
+			if Object[+4].Value1==29
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[346] // MM Past
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(68,FX_INK,TempValue0,98)
+			if Object[+4].Value1==30
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,98)
+			if Object[+4].Value1==30
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif			
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[347] // MM Good Future
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(68,FX_INK,TempValue0,122)
+			if Object[+4].Value1==31
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,122)
+			if Object[+4].Value1==31
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,122)
+			if Object[+4].Value1==31
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[348] // MM Bad Future
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,146)
+			if Object[+4].Value1==32
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,146)
+			if Object[+4].Value1==32
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	endif
+	endif
+	
+	if Object[+4].Value1>=33 //Custom Soundtrack Page 9
+	if Object[+4].Value1<37
+	TempValue0=Screen.CenterX
+	TempValue0-=181
+	DrawSpriteScreenFX(93,FX_INK,TempValue0,41)
+	TempValue0=Screen.CenterX
+	switch SaveRAM[364] // Title Screen
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,74)
+			if Object[+4].Value1==33
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,74)
+			if Object[+4].Value1==33
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(129,FX_INK,TempValue0,74)
+			if Object[+4].Value1==33
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+	endswitch
+	TempValue0=Screen.CenterX
+	switch SaveRAM[349] // Special Stages
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(29,FX_INK,TempValue0,98)
+			if Object[+4].Value1==34
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(30,FX_INK,TempValue0,98)
+			if Object[+4].Value1==34
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,98)
+			if Object[+4].Value1==34
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+		case 3
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,98)
+			if Object[+4].Value1==34
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[350] // Boss Theme
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(68,FX_INK,TempValue0,122)
+			if Object[+4].Value1==35
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,122)
+			if Object[+4].Value1==35
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,122)
+			if Object[+4].Value1==35
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[351] // Final Boss Theme
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,146)
+			if Object[+4].Value1==36
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,146)
+			if Object[+4].Value1==36
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	endif
+	endif
+	
+	if Object[+4].Value1>=37 //Page 10
+	if Object[+4].Value1<41
+	TempValue0=Screen.CenterX
+	TempValue0-=181	
+	DrawSpriteScreenFX(106,FX_INK,TempValue0,41)
+	TempValue0=Screen.CenterX
+	switch SaveRAM[352] // Zone Complete
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(68,FX_INK,TempValue0,74)
+			if Object[+4].Value1==37
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,74)
+			if Object[+4].Value1==37
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,74)
+			if Object[+4].Value1==37
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+	endswitch
+	TempValue0=Screen.CenterX
+	switch SaveRAM[353] // Invincibility
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,98)
+			if Object[+4].Value1==38
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,98)
+			if Object[+4].Value1==38
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[354] // Speed Shoes
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(68,FX_INK,TempValue0,122)
+			if Object[+4].Value1==39
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,122)
+			if Object[+4].Value1==39
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(129,FX_INK,TempValue0,122)
+			if Object[+4].Value1==39
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 3
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,122)
+			if Object[+4].Value1==39
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[355] // Game Over
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,146)
+			if Object[+4].Value1==40
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,146)
+			if Object[+4].Value1==40
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	endif
+	endif	
+	
+	if Object[+4].Value1>=41 //Page 11
+	if Object[+4].Value1<45
+	TempValue0=Screen.CenterX
+	TempValue0-=181	
+	DrawSpriteScreenFX(69,FX_INK,TempValue0,41)
+	TempValue0=Screen.CenterX
+	switch SaveRAM[356] // Main menu
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(29,FX_INK,TempValue0,74)
+			if Object[+4].Value1==41
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(30,FX_INK,TempValue0,74)
+			if Object[+4].Value1==41
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,74)
+			if Object[+4].Value1==41
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 3
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,74)
+			if Object[+4].Value1==41
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[358] // Time Attack
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(68,FX_INK,TempValue0,98)
+			if Object[+4].Value1==42
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,98)
+			if Object[+4].Value1==42
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,98)
+			if Object[+4].Value1==42
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break		
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[360] // D. A. Garden
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,122)
+			if Object[+4].Value1==43
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,122)
+			if Object[+4].Value1==43
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[365] // Secrets
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(29,FX_INK,TempValue0,146)
+			if Object[+4].Value1==44
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break		
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(30,FX_INK,TempValue0,146)
+			if Object[+4].Value1==44
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,146)
+			if Object[+4].Value1==44
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+		case 3
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,146)
+			if Object[+4].Value1==44
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+	endswitch
+	endif
+	endif
+	
+	if Object[+4].Value1>=45 //Page 12
+	if Object[+4].Value1<49
+	TempValue0=Screen.CenterX
+	TempValue0-=181	
+	DrawSpriteScreenFX(107,FX_INK,TempValue0,41)		
+	TempValue0=Screen.CenterX
+	switch SaveRAM[361] // Opening Video
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,74)
+			if Object[+4].Value1==45
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,74)
+			if Object[+4].Value1==45
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,74)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[362] // Closing Video
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,98)
+			if Object[+4].Value1==46
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,98)
+			if Object[+4].Value1==46
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,98)
+				TempValue0+=10
+			endif
+			break
+	endswitch	
+	TempValue0=Screen.CenterX
+	switch SaveRAM[363] // Staff Credits 
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(68,FX_INK,TempValue0,122)
+			if Object[+4].Value1==47
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break		
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,122)
+			if Object[+4].Value1==47
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,122)
+			if Object[+4].Value1==47
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,122)
+				TempValue0+=10
+			endif
+			break
+	endswitch
+	TempValue0=Screen.CenterX
+	switch SaveRAM[366] // Results Summary
+		case 0
+			TempValue0+=60
+			DrawSpriteScreenFX(68,FX_INK,TempValue0,146)
+			if Object[+4].Value1==48
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break		
+		case 1
+			TempValue0+=60
+			DrawSpriteScreenFX(65,FX_INK,TempValue0,146)
+			if Object[+4].Value1==48
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+		case 2
+			TempValue0+=60
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,146)
+			if Object[+4].Value1==48
+				TempValue0-=10
+				DrawSpriteScreenFX(130,FX_INK,TempValue0,146)
+				TempValue0+=10
+			endif
+			break
+	endswitch
+	endif
+	endif
+	
+	break
+	case 13
+	case 14
+	case 15
+		//ArrayPos0=Object.Value1
+		//Object.Alpha=255
+		//CallFunction(OptionsMenuC_Function6)
+		break
+
+	endswitch
+endsub
+
+
+sub ObjectStartup
+	TempValue7=Screen.CenterX		
+	TempValue7-=62
+	switch Engine.Language
+	case 0
+		LoadSpriteSheet("Menu/SoundMenu_EN.gif")
+		break
+	case 1
+		LoadSpriteSheet("Menu/SoundMenu_FR.gif")
+		break
+	case 2
+		LoadSpriteSheet("Menu/SoundMenu_IT.gif")
+		break
+	case 3
+		LoadSpriteSheet("Menu/SoundMenu_DE.gif")
+		break
+	case 4
+		LoadSpriteSheet("Menu/SoundMenu_ES.gif")
+		break
+	case 5
+		LoadSpriteSheet("Menu/SoundMenu_JP.gif")
+		break
+
+	endswitch
+#platform: Mobile
+	if SaveRAM[32]==0
+		SaveRAM[33]=100
+		SaveRAM[34]=100
+		SaveRAM[35]=0
+	endif
+	Options.OriginalControls=SaveRAM[35]
+#endplatform
+	SpriteFrame(4,2,0,0,479,34)
+	SpriteFrame(4,2,0,0,479,34)
+	SpriteFrame(4,2,0,0,479,34)
+	SpriteFrame(4,2,0,0,479,34)
+	SpriteFrame(0,0,20,20,168,366)
+	SpriteFrame(0,0,20,20,168,387)
+	SpriteFrame(0,0,20,20,189,366)
+	SpriteFrame(0,0,20,20,189,387)
+	SpriteFrame(45,12,0,0,488,1)
+	SpriteFrame(0,0,0,0,259,421)
+#platform: Standard  
+	SpriteFrame(64,12,0,0,1,69)
+#endplatform
+#platform: Mobile
+	if Options.DevMenuFlag==1
+		SpriteFrame(64,12,66,16,326,598)
+	else
+		SpriteFrame(64,12,0,0,130,69)
+	endif
+#endplatform
+	SpriteFrame(64,12,128,16,1,205)
+	SpriteFrame(64,12,128,16,1,222)
+	SpriteFrame(64,12,128,16,1,239)
+#platform: Standard  
+	SpriteFrame(64,12,0,0,130,69)//13
+#endplatform
+#platform: Mobile
+	if Options.DevMenuFlag==1
+		SpriteFrame(64,12,66,16,259,598)//14
+	else
+		SpriteFrame(64,12,128,16,1,69)//14
+	endif
+#endplatform			  
+	SpriteFrame(64,12,128,16,130,205)//15
+	SpriteFrame(64,12,128,16,130,222)//16
+	SpriteFrame(64,12,128,16,130,239)//17
+	SpriteFrame(0,0,128,16,1,392)//Present 18
+	SpriteFrame(0,0,128,16,1,409)//Past 19
+	SpriteFrame(0,0,128,16,1,426)//G. Future 20
+	SpriteFrame(0,0,128,16,1,443)//B. Future 21
+	SpriteFrame(0,0,128,16,130,392)//Highlight Present 22
+	SpriteFrame(0,0,128,16,130,409)//Highlight Past 23
+	SpriteFrame(0,0,128,16,130,426)//Highlight G. Future 24
+	SpriteFrame(0,0,128,16,130,443)//Highlight B. Future 25
+	SpriteFrame(64,12,144,16,259,1)//PP 26
+	SpriteFrame(0,0,36,20,171,345)//27
+	SpriteFrame(0,0,54,20,300,370)//Custom 28
+	SpriteFrame(0,0,54,20,1,494)//Arrange 29
+	SpriteFrame(0,0,54,20,56,494)//Unified 30
+	SpriteFrame(0,0,0,0,0,0)//Null 31
+	SpriteFrame(0,0,54,20,221,494)// US 32
+	SpriteFrame(0,0,128,16,1,375)//Missing Music Mod 33
+	SpriteFrame(0,0,128,16,130,375)//Highlight Missing Music Mod 34	
+	SpriteFrame(0,0,13,13,355,370)//Up 35
+	SpriteFrame(0,0,13,13,369,370)//Down 36	
+	SpriteFrame(0,0,20,20,355,328)//On 37
+	SpriteFrame(0,0,21,20,376,328)//Off 38
+	SpriteFrame(0,0,20,20,355,349)//Highlight On 39
+	SpriteFrame(0,0,21,20,376,349)//Highlight Off 40	
+	SpriteFrame(0,0,128,16,1,290)//Secrets 41
+	SpriteFrame(0,0,128,16,130,290)//Highlight Secrets 42	
+	SpriteFrame(0,0,54,20,398,307)//Button Disabled 43	
+	SpriteFrame(0,0,20,20,355,307)//On Disabled 44	
+	SpriteFrame(0,0,21,20,376,307)//Off Disabled 45	
+	SpriteFrame(0,0,128,16,259,273)//Victory Disabled 46 	
+	SpriteFrame(0,0,128,16,1,358)//Bonus Music 47
+	SpriteFrame(0,0,128,16,130,358)//Highlight Bonus Music 48	
+	SpriteFrame(0,0,128,16,1,1)//Soundtrack 49
+	SpriteFrame(0,0,128,16,130,1)//Highlight Soundtrack 50
+	SpriteFrame(0,0,54,20,300,328)//Original 51
+	SpriteFrame(0,0,54,20,300,349)//Remaster 52
+	SpriteFrame(0,0,128,16,1,324)// JP Past 53
+	SpriteFrame(0,0,128,16,130,324)//Highlight JP Past 54
+	SpriteFrame(0,0,54,20,386,494)//King 55
+	SpriteFrame(0,0,54,20,441,494)//Bouncy 56
+	SpriteFrame(-20,-56,40,40,259,307)// DJ1 57
+	SpriteFrame(-20,-56,40,40,259,348)// DJ2
+	SpriteFrame(-44,-48,11,19,259,389)//Music 1 Frame A
+	SpriteFrame(-46,-48,11,19,259,389)//Music 1 Frame B
+	SpriteFrame(32,-48,17,16,271,389)//188 Music 2 Frame A
+	SpriteFrame(34,-48,17,16,271,389)//188 Music 2 Frame B
+	SpriteFrame(0,0,128,16,1,341)// US Past Themes 63
+	SpriteFrame(0,0,128,16,130,341)//Highlight US Past Themes 64
+	SpriteFrame(0,0,54,20,166,494)// JP 65
+	SpriteFrame(0,0,54,20,1,515)// JP O 66
+	SpriteFrame(0,0,54,20,56,515)// JP R 67
+	SpriteFrame(0,0,54,20,111,494)//Hybrid  68
+	SpriteFrame(64,12,128,16,259,137)//Game Menus 69	
+	SpriteFrame(0,0,54,20,300,307)// JP Red 70	
+	SpriteFrame(0,0,128,16,1,171)//Stage Select 71
+	SpriteFrame(0,0,128,16,1,35)//Time Attack 72
+	SpriteFrame(0,0,128,16,1,52)//Achievements 73
+	SpriteFrame(0,0,128,16,130,460)//Highlight Main Menu 74
+	SpriteFrame(0,0,128,16,130,171)//Highlight Stage Select 75
+	SpriteFrame(0,0,128,16,130,35)//Highlight Time Attack 76
+	SpriteFrame(0,0,128,16,130,52)//Highlight Achievements 77
+	SpriteFrame(0,0,54,20,276,494)//Bonus A 78
+	SpriteFrame(0,0,54,20,331,494)//Bonus B 79
+	SpriteFrame(64,12,144,16,259,18)//CC 80
+	SpriteFrame(64,12,144,16,259,35)//TT 81
+	SpriteFrame(64,12,144,16,259,52)//QQ 82
+	SpriteFrame(64,12,144,16,259,69)//WW 83
+	SpriteFrame(64,12,144,16,259,86)//SS 84
+	SpriteFrame(64,12,144,16,259,103)//Racing Metal 85
+	SpriteFrame(0,0,128,16,1,18)//Switch on Win 86
+	SpriteFrame(0,0,128,16,1,307)//Victory Stage Select 87
+	SpriteFrame(0,0,128,16,130,18)//Highlight Switch on Win 88
+	SpriteFrame(0,0,128,16,130,307)//Highlight Victory Stage Select 89
+	SpriteFrame(64,12,144,16,259,120)//MM 90
+	SpriteFrame(0,0,128,16,1,273)//Special Stage 91
+	SpriteFrame(0,0,128,16,130,273)//Highlight Special Stage 92
+	SpriteFrame(64,12,144,16,259,154)//Common 1 93
+	SpriteFrame(0,0,128,16,1,69)//Boss 94
+	SpriteFrame(0,0,128,16,1,86)//Final Boss 95
+	SpriteFrame(0,0,128,16,130,69)//Highlight Boss 96
+	SpriteFrame(0,0,128,16,130,86)//Highlight Final Boss 97
+	SpriteFrame(0,0,128,16,1,103)//Zone Complete 98
+	SpriteFrame(0,0,128,16,130,103)//Highlight Zone Complete 99
+	SpriteFrame(0,0,128,16,1,120)//Invincibility 100
+	SpriteFrame(0,0,128,16,1,137)//Speed Shoes 101
+	SpriteFrame(0,0,128,16,1,154)//Game Over 102
+	SpriteFrame(0,0,128,16,130,120)//Highlight Invincibility 103
+	SpriteFrame(0,0,128,16,130,137)//Highlight Speed Shoes 104
+	SpriteFrame(0,0,128,16,130,154)//Highlight Game Over 105
+	SpriteFrame(64,12,128,16,259,171)//Common 2 106
+	SpriteFrame(64,12,128,16,259,188)//Other 107
+	SpriteFrame(0,0,128,16,1,188)//D. A. Garden 108
+	SpriteFrame(0,0,128,16,1,222)//Opening Video 109
+	SpriteFrame(0,0,128,16,1,239)//Closing Video 110
+	SpriteFrame(0,0,128,16,1,205)//Staff Credits 111
+	SpriteFrame(0,0,128,16,130,188)//Highlight D. A. Garden 112
+	SpriteFrame(0,0,128,16,130,222)//Highlight Opening Video 113
+	SpriteFrame(0,0,128,16,130,239)//Highlight Closing Video 114
+	SpriteFrame(0,0,128,16,130,205)//Highlight Staff Credits 115
+	SpriteFrame(0,0,128,16,1,256)//Title Screen 116
+	SpriteFrame(0,0,128,16,130,256)//Highlight Title Screen 117	
+	SpriteFrame(0,0,144,16,259,239)// US Past Disabled 118
+	SpriteFrame(0,0,144,16,259,222)// JP Past Disabled 119
+	SpriteFrame(0,0,144,16,259,256)//Bonus Disabled 120
+	SpriteFrame(0,0,54,16,1,536)//Arrange Narrow 121
+	SpriteFrame(0,0,54,16,56,536)//Unified Narrow 122
+	SpriteFrame(0,0,54,16,166,536)// JP Narrow 123
+	SpriteFrame(0,0,54,16,221,536)// US Narrow 124
+	SpriteFrame(0,0,54,16,276,536)//Bonus A Narrow 125
+	SpriteFrame(0,0,54,16,331,536)//Bonus B Narrow 126
+	SpriteFrame(0,0,54,16,111,536)//Hybrid Narrow 127
+	SpriteFrame(0,0,128,16,1,460)// Main Menu 128
+	SpriteFrame(0,0,54,20,111,515)// JP Beta 129
+	SpriteFrame(0,0,73,20,355,384)//Play 130
+	SpriteFrame(0,0,73,16,355,405)//Play Narrow 131	
+	SpriteFrame(0,0,54,20,300,391)//Remaster + PP Past Beta 132
+	SpriteFrame(0,0,54,20,300,412)//Off 133
+	SpriteFrame(0,0,54,20,300,433)//Good Only 134
+	SpriteFrame(0,0,54,20,300,454)//Bad Only 135
+	SpriteFrame(0,0,54,20,355,433)//Both 136
+	SpriteFrame(0,0,54,20,166,515)//Bonus C 137
+	SpriteFrame(0,0,54,20,221,515)//Bonus D 138
+	SpriteFrame(0,0,54,16,1,553)//Bonus C Narrow 139
+	SpriteFrame(0,0,54,16,56,553)//Bonus D Narrow 140	
+	SpriteFrame(-49,-85,105,66,355,422)//Rap 141
+	SpriteFrame(-49,-85,105,66,355,489)//Rap 142
+	SpriteFrame(0,0,13,13,397,370)//Right 143
+	SpriteFrame(0,0,13,13,411,370)//Left 144
+endsub
+
+sub RSDK
+	LoadSpriteSheet("Global/Display.gif")
+	SetEditorIcon(Icon0,SingleIcon,-16,-16,32,32,1,143)
+endsub

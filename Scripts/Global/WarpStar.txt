@@ -1,0 +1,369 @@
+//------------Sonic CD WarpStar Script-------------//
+//---Originally Scripted by Christian Whitehead 'The Taxman'---//
+//-------Unpacked By Rubberduckycooly's Script Unpacker-------//
+//----------------New Script by TheStoneBanana----------------//
+
+//-------Aliases-------//
+#alias 27: TYPE_WARPSTAR
+
+#alias 48: TIME_WARPFRAME
+
+// fire
+#alias Object.Value0:Object.FireTimer
+#alias Object.Value2:Object.FireCount
+
+// warpstar
+#alias Object.Value4:Object.WarpWait
+
+// player
+#alias Player.Value3:Player.SpeedShoes
+#alias Player.Value4:Player.Invincible
+
+#alias Player.Value6:Player.MinRollSpeed
+
+//------Functions------//
+sub ObjectMain
+	
+	switch Object.PropertyValue
+	
+	// Fire trail particle
+	case 0
+		switch Object.State
+			// State 0 - Waiting to burn and spawn another flame
+			case 0
+				// If time travel is in progress...
+				if Warp.Count==true
+					// If it's time to make more fire...
+					
+					if Object.FireTimer<=0
+						if Object.FireCount>=8
+							Object.Type=TypeName[BlankObject]		// delete self
+						else
+							Object.FireTimer=1
+							TempValue0=Player.CollisionBottom		// get Sonic's collision height
+
+							// Get rotated vals based on Sonic's rotation
+							Sin(TempValue1,Player.Rotation)
+							Cos(TempValue2,Player.Rotation)
+							TempValue1<<=7
+							TempValue2<<=7
+							TempValue1*=TempValue0
+							TempValue2*=TempValue0
+							FlipSign(TempValue1)
+							TempValue1+=Player.XPos
+							TempValue2+=Player.YPos
+							Object.XPos=TempValue1
+							Object.YPos=TempValue2
+							CreateTempObject(TypeName[WarpStar],0,TempValue1,TempValue2)
+							Object[TempObjectPos].State=2
+							Object[TempObjectPos].Rotation=Player.Rotation
+							Object[TempObjectPos].DrawOrder=3
+							
+							TempValue0=-28
+							TempValue0*=Object.FireCount
+							TempValue0+=512
+							Object[TempObjectPos].Scale=TempValue0
+						endif
+						Object.FireCount++
+
+					// Otherwise...
+					else
+						Object.FireTimer--						// decrement the timer
+					endif
+				// Otherwise, if time travel is not in progress...
+				else
+					// If time travel isn't being charged...
+					if Warp.Timer==0
+						Object.Type=TypeName[BlankObject]		// delete self
+					endif
+				endif
+				break
+			
+			// State 1 - Burning flame that falls towards the ground
+			case 1
+				ObjectTileCollision(0,0,0,0)
+				if CheckResult==1
+					Object.State=2
+				else
+					Object.YPos+=131072
+				endif
+				
+			// State 2 - Stationary burning flame
+			case 2
+				// If the fire has been burning for 20 frames...
+				if Object.Value1>20
+					// decrease the fire's scale until its completely burnt out and then delete
+					TempValue0=Object.Scale
+					TempValue0-=6
+					if TempValue0<=0
+						Object.Type=TypeName[BlankObject]
+					else
+						Object.Scale=TempValue0
+					endif
+				endif
+				Object.Value1++
+				break
+				
+		endswitch
+		break
+	
+	// Warp stars
+	case 1
+		// If the warp's charge has been interrupted...
+		if Warp.Timer==0
+			// If Sonic hasn't already warped out of existence...
+			if Warp.Count==false
+				Object.Type=TypeName[BlankObject]					// delete ourself
+				StopSfx(14)											// kill the warp sound
+				break
+			endif
+		endif
+
+		// If the direction has not yet been locked...
+		if Warp.Count==false
+			ATan2(Object.Rotation,Player.XVelocity,Player.YVelocity)	// get angle based on the player's velocity
+			Object.Rotation<<=1									// convert result from 256-base to 512-base
+		endif
+		// If it's time to travel through time...
+		if Object.Value1==1
+			// If we've waited long enough for the flash to commence...
+			if Object.WarpWait>61
+				CreateTempObject(TypeName[TimeWarp],0,0,0)		// create the object that does the flash and changes time
+				if Object[2].Type==TypeName[Invincibility]
+					TempValue0=Player.Invincible
+					TempValue0-=100								// time has to be reduced due to the warp not interrupting the music
+					if TempValue0>0
+						Warp.Invincible=TempValue0
+					endif
+				endif
+				
+				if Object[2].PropertyValue==1
+					Warp.Shield=true
+				endif
+				
+				TempValue0=Player.SpeedShoes
+				TempValue0-=100
+				if TempValue0>0
+					Warp.SpeedShoes=TempValue0
+				endif
+				
+				Object.Type=TypeName[BlankObject]				// delete ourself
+			else	
+				Object.WarpWait++	
+			endif
+		endif
+		break
+		
+	// Baby stars
+	case 2
+		switch Object.State
+			case 0
+				// If time travel is being built-up or has been initiated...
+				if Warp.Timer!=0
+					// If the player hasn't already warped out of existence...
+					if Warp.Count!=true
+				if Object[2].Type!=TypeName[Invincibility]
+					Player.Invincible=true
+				endif
+						Rand(TempValue0,32)						// generate a random number
+						TempValue0-=16							// center it 
+						
+						ATan2(TempValue3,Player.XVelocity,Player.YVelocity)	// get angle based on the player's velocity
+						TempValue3<<=1									// convert result from 256-base to 512-base
+						
+						Sin(TempValue1,TempValue3)
+						Cos(TempValue2,TempValue3)
+						TempValue1<<=7							// bump sine up to meet the pos bit order
+						TempValue2<<=7							// bump cos up to meet the pos bit order
+						TempValue1*=TempValue0					// mult by the star disp
+						TempValue2*=TempValue0					// mult by the star disp
+						FlipSign(TempValue1)					// flip the X sine so it works properly
+						TempValue1+=Player.XPos
+						TempValue2+=Player.YPos
+						
+						CreateTempObject(TypeName[WarpStar],2,TempValue1,TempValue2)
+						Object[TempObjectPos].State=1
+						Object[TempObjectPos].DrawOrder=3
+						Rand(Object[TempObjectPos].Frame,7)		// randomize how large the star is
+						Object[TempObjectPos].Frame<<=2			// shift up (and later shift down) as a cheap way to make frames animate longer
+
+					else
+						// if Sonic is on the ground...
+						if Player.Gravity==0
+							// If Sonic isn't underwater...
+							if Player.GravityStrength==14336
+								CreateTempObject(TypeName[WarpStar],0,Player.XPos,TempValue2)
+							endif
+						endif
+						Object.Type=TypeName[BlankObject]
+					endif
+				else
+					Object.Type=TypeName[BlankObject]
+				endif
+				break
+			case 1
+				TempValue0=Object.Frame
+				TempValue0--
+				if TempValue0<0
+					Object.Type=TypeName[BlankObject]
+				else
+					Object.Frame=TempValue0
+				endif
+				break
+		endswitch
+		break
+
+	endswitch
+endsub
+
+
+sub ObjectDraw
+	switch Object.PropertyValue
+
+	// Fire
+	case 0
+		// If we have been given the go-ahead
+		if Object.State>0
+			TempValue0=Object.Frame
+			TempValue0>>=2
+			if Warp.Count==true
+				DrawSpriteFX(TempValue0, FX_ROTOZOOM, Object.XPos, Object.YPos)
+			endif
+			Object.Frame++
+			Object.Frame&=15
+		endif
+		break
+		
+	// Warp stars
+	case 1
+		TempValue0=Object.Frame
+		TempValue0>>=2
+		TempValue0+=4
+		
+		if Object.Frame<TIME_WARPFRAME
+			Object.XPos=Player.XPos
+			Object.YPos=Player.YPos
+		endif
+		DrawSpriteFX(TempValue0, FX_ROTATE, Object.XPos, Object.YPos)
+		
+		Object.Frame++
+		// If the frame being displayed is the big flash...
+		if Object.Frame==TIME_WARPFRAME
+			if Player.Visible!=false
+				// We want to set up time travel HERE and not after the sparkles are rendered
+				Screen.CameraEnabled=0
+				if Stage.Minutes>=5
+				Stage.Milliseconds=0
+				Stage.Seconds=0
+				Stage.Minutes=5
+				endif
+				Stage.TimeEnabled=0				// Freeze the camera           
+				// If the player isn't already invincible...
+				if Object[2].Type!=TypeName[Invincibility]
+					Player.Invincible=1000							// Prevent Sonic from being hurt
+				endif
+				Player.ControlMode=-1								// Prevent the player from controlling Sonic
+				Player.Visible=false								// Make Sonic invisible
+				// Player.ObjectInteraction=0						// Stop Sonic from touching anything
+				// Store variables for the next time zone
+				Warp.XPos=Player.XPos
+				Warp.YPos=Player.YPos
+				Warp.XVelocity=Player.XVelocity
+				Warp.YVelocity=Player.YVelocity
+				Warp.Speed=Player.Speed
+				Warp.CollisionMode=Player.CollisionMode
+				Warp.MinRollSpeed=Player.MinRollSpeed
+				Warp.Gravity=Player.Gravity
+				if Player.State==PlayerObject_Blank
+					Warp.State=Player.State
+				else
+					if Player.State==PlayerObject_SpinningTop
+						Warp.State=Player.State
+					else
+						if Player.State==PlayerObject_DebugMode
+							Warp.State=Player.State
+						else
+							Warp.State=Player.State
+						endif
+					endif
+				endif
+				if Player.Value13>=21
+					Warp.State=PlayerObject_HandleDropDash
+				endif
+				Warp.Animation=Player.Animation
+				Warp.Angle=Player.Angle
+				Warp.PlayerFrame=Player.Frame
+
+				Warp.Count=true
+			endif
+		endif
+
+		if Object.Frame>87
+			Object.Value1=1
+			Object.Frame=87
+			Object.Alpha=0
+		endif
+		break
+		
+	// Baby stars
+	case 2
+		// If we have been given the go-ahead...
+		if Object.State>0
+			TempValue0=Object.Frame
+			TempValue0>>=2
+			TempValue0+=26
+			DrawSpriteFX(TempValue0, 0, Object.XPos, Object.YPos)
+		endif
+		break
+		
+	endswitch
+endsub
+
+
+sub ObjectStartup	
+	LoadSpriteSheet("Global/Items4.gif")
+	// come on baby light my fire
+	SpriteFrame(-8, -32, 16, 32, 143, 57)
+	SpriteFrame(-7, -32, 15, 32, 127, 57)
+	SpriteFrame(-7, -32, 15, 32, 127, 90)
+	SpriteFrame(-8, -32, 16, 32, 143, 90)
+	
+	// warp stars
+	SpriteFrame(2,-12,16,24,25,1)
+	SpriteFrame(-14,-20,32,40,9,26)
+	SpriteFrame(2,-12,16,24,25,1)
+	SpriteFrame(-14,-20,32,40,9,26)
+	SpriteFrame(2,-12,16,24,25,1)
+	SpriteFrame(-14,-20,32,40,9,26)
+	SpriteFrame(2,-12,16,24,25,1)
+	SpriteFrame(-14,-20,32,40,9,26)
+	SpriteFrame(2,-12,16,24,25,1)
+	SpriteFrame(0,0,0,0,0,0)
+	SpriteFrame(-14,-20,32,40,9,26)
+	SpriteFrame(0,0,0,0,0,0)
+	SpriteFrame(-14,-32,40,56,1,67)		// BEEG FLASH
+	SpriteFrame(0,0,0,0,0,0)
+	SpriteFrame(10,-20,72,40,42,1)
+	SpriteFrame(0,0,0,0,0,0)
+	SpriteFrame(10,-20,88,40,115,1)
+	SpriteFrame(0,0,0,0,0,0)
+	SpriteFrame(26,-20,88,40,160,42)
+	SpriteFrame(0,0,0,0,0,0)
+	SpriteFrame(66,-8,56,24,42,42)
+	SpriteFrame(0,0,0,0,0,0)
+
+	// tiny baby stars
+	SpriteFrame(-1,-1,3,3,42,67)
+	SpriteFrame(-2,-2,5,5,46,67)
+	SpriteFrame(-3,-3,7,7,52,67)
+	SpriteFrame(-4,-4,9,9,60,67)
+	SpriteFrame(-5,-5,11,11,70,67)
+	SpriteFrame(-7,-7,15,15,82,67)
+	
+	Warp.Count=false
+endsub
+
+sub RSDK
+	LoadSpriteSheet("Global/Display.gif")
+	SetEditorIcon(Icon0,SingleIcon,-16,-16,32,32,1,143)
+endsub

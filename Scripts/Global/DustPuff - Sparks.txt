@@ -1,0 +1,159 @@
+//------------Sonic CD DustPuff Script-------------//
+//--------Scripted by Christian Whitehead 'The Taxman'--------//
+//-------Unpacked By Rubberduckycooly's Script Unpacker-------//
+
+//-------Aliases-------//
+#alias 24: TYPE_DUSTPUFF
+
+
+sub ObjectDraw
+	if Object.Frame>3
+		Stage.ActivePlayer=Object.PropertyValue
+		if Object.Frame<11
+			Object.Direction=Player.Direction
+			Object.XPos=Player.XPos
+			Object.iYPos=Player.CollisionBottom
+			Object.YPos+=Player.YPos
+			Stage.ActivePlayer=0
+			if Player.Animation!=ANI_SPINDASH
+				Object.Type=TypeName[BlankObject]
+			else
+				DrawSpriteFX(Object.Frame,FX_FLIP,Object.XPos,Object.YPos)
+			endif
+		else
+			if Object.Frame==11
+				Object.Direction=Player.Direction
+				Object.XPos=Player.XPos
+				Object.iYPos=Player.CollisionBottom
+				Object.YPos+=Player.YPos
+			endif
+			DrawSpriteFX(Object.Frame,FX_FLIP,Object.XPos,Object.YPos)
+		endif
+	else
+		DrawSpriteFX(Object.Frame,FX_FLIP,Object.XPos,Object.YPos)
+	endif
+	switch Object.Frame
+	case 0
+	case 1
+	case 2
+		Object.AnimationTimer++
+		if Object.AnimationTimer>3
+			Object.Frame++
+			Object.AnimationTimer=0
+		endif
+		break
+	case 3
+		Object.AnimationTimer++
+		if Object.AnimationTimer>3
+			Object.Type=TypeName[BlankObject]
+		endif
+		break
+	case 4
+	case 5
+	case 6
+	case 7
+	case 8
+	case 9
+		Object.AnimationTimer++
+		if Object.AnimationTimer>1
+			Object.Frame++
+			Object.AnimationTimer=0
+		endif
+		break
+	case 10
+		Object.AnimationTimer++
+		if Object.AnimationTimer>1
+			Object.Frame=4
+			Object.AnimationTimer=0
+		endif
+		break
+	case 11
+		if Object.AnimationTimer==0
+			Object.Direction=Player.Direction
+			Object.XPos=Player.XPos
+			Object.iYPos=Player.CollisionBottom
+			Object.YPos+=Player.YPos
+		endif
+		Object.AnimationTimer++
+		if Object.AnimationTimer>0
+			Object.Frame++
+			Object.AnimationTimer=0
+		endif
+		break
+	case 12
+	case 13
+	case 14
+		Object.AnimationTimer++
+		if Object.AnimationTimer>0
+			Object.Frame++
+			Object.AnimationTimer=0
+		endif
+		break
+	case 15
+	case 16
+	case 17
+	case 18
+		Object.AnimationTimer++
+		if Object.AnimationTimer>1
+			Object.Frame++
+			Object.AnimationTimer=0
+		endif
+		break
+	case 19
+	case 20
+	case 21
+	case 22
+		Object.AnimationTimer++
+		if Object.AnimationTimer>2
+			Object.Frame++
+			Object.AnimationTimer=0
+		endif
+		break
+	case 23
+	case 24
+	case 25
+		Object.AnimationTimer++
+		if Object.AnimationTimer>3
+			Object.Frame++
+			Object.AnimationTimer=0
+		endif
+		break
+	case 26
+		Object.AnimationTimer++
+		if Object.AnimationTimer>3
+			Object.Type=TypeName[BlankObject]
+		end if
+		break
+	endswitch
+endsub
+
+
+sub ObjectStartup
+	LoadSpriteSheet("Global/Items3.gif")
+	SpriteFrame(-7,-11,13,14,148,129)
+	SpriteFrame(-7,-11,13,14,161,137)
+	SpriteFrame(-6,-11,13,14,240,233)
+	SpriteFrame(-7,-11,13,14,243,177)
+	SpriteFrame(-32,-10,32,10,181,183)
+	SpriteFrame(-32,-12,32,12,148,198)
+	SpriteFrame(-32,-16,32,16,181,194)
+	SpriteFrame(-32,-18,32,18,115,192)
+	SpriteFrame(-32,-20,32,20,148,177)
+	SpriteFrame(-32,-21,32,21,214,177)
+	SpriteFrame(-32,-23,32,23,50,232)
+	SpriteFrame(-17,-16,17,16,257,1) //drop dash SparkDust
+	SpriteFrame(-27,-22,28,22,257,18)
+	SpriteFrame(-30,-26,32,26,257,41)
+	SpriteFrame(-30,-30,32,30,257,68)
+	SpriteFrame(-26,-35,24,33,257,99)
+	SpriteFrame(-27,-36,25,32,257,133)
+	SpriteFrame(-27,-38,25,27,257,166)
+	SpriteFrame(-27,-39,26,25,257,194)
+	SpriteFrame(-26,-39,23,15,257,220)
+	SpriteFrame(-26,-39,22,10,257,236)
+endsub
+
+sub RSDK
+	LoadSpriteSheet("Global/Display.gif")
+	SetEditorIcon(Icon0,SingleIcon,-16,-16,32,32,1,143)
+endsub

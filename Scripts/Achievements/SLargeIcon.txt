@@ -1,0 +1,164 @@
+//------------Sonic CD LargeIcon Script-------------//
+//--------Scripted by Christian Whitehead 'The Taxman'--------//
+//-------Unpacked By Rubberduckycooly's Script Unpacker-------//
+
+//-------Aliases-------//
+#alias 7: TYPE_SLARGEICON
+
+
+sub ObjectMain
+	switch Object.State
+	case 1
+		TempValue0=Screen.CenterX
+		TempValue0-=72
+		TempValue0<<=16
+		if Object.XPos<TempValue0
+			Object.XPos+=1048576
+			if Object.XPos>TempValue0
+				Object.XPos=TempValue0
+			endif
+		else
+			Object.State=0
+		endif
+		break
+	case 2
+		if Object.XPos>-4718592
+			Object.XPos-=1048576
+			if Object.XPos<-4718592
+				Object.XPos=-4718592
+			endif
+		else
+			Object.State=0
+		endif
+		break
+
+	endswitch
+endsub
+
+
+sub ObjectDraw
+	DrawSprite(15)
+	DrawSprite(Object.PropertyValue)
+	TempValue0=Screen.CenterX
+	TempValue0-=72
+	TempValue0<<=16
+	TempValue0-=Object.XPos
+	TempValue0>>=16
+	TempValue0+=Screen.CenterX
+	TempValue0+=20
+	TempValue1=TempValue0
+	TempValue1+=68
+#platform: Mobile
+	switch Object[0].State
+	default
+		DrawSprite(16)
+		DrawSpriteScreenXY(18,TempValue0,11)
+		DrawSpriteScreenXY(20,TempValue1,11)
+		break
+	case 7
+		switch Object[0].Value5
+		default
+			DrawSprite(16)
+			DrawSpriteScreenXY(18,TempValue0,11)
+			DrawSpriteScreenXY(20,TempValue1,11)
+			break
+		case 0
+			DrawSprite(17)
+			DrawSpriteScreenXY(18,TempValue0,11)
+			DrawSpriteScreenXY(20,TempValue1,11)
+			break
+		case 1
+			DrawSprite(16)
+			DrawSpriteScreenXY(19,TempValue0,11)
+			DrawSpriteScreenXY(20,TempValue1,11)
+			break
+		case 2
+			DrawSprite(16)
+			DrawSpriteScreenXY(18,TempValue0,11)
+			DrawSpriteScreenXY(21,TempValue1,11)
+			break
+
+		endswitch
+		break
+	case 10
+		TempValue2=Object[0].Value0
+		TempValue2&=3
+		TempValue2>>=1
+		if TempValue2==0
+			DrawSpriteScreenXY(21,TempValue1,11)
+		else
+			DrawSpriteScreenXY(20,TempValue1,11)
+		endif
+		DrawSprite(16)
+		DrawSpriteScreenXY(18,TempValue0,11)
+		break
+	case 11
+		DrawSprite(16)
+		DrawSpriteScreenXY(18,TempValue0,11)
+		DrawSpriteScreenXY(21,TempValue1,11)
+		break
+	case 13
+		TempValue2=Object[0].Value0
+		TempValue2&=3
+		TempValue2>>=1
+		if TempValue2==0
+			DrawSprite(17)
+		else
+			DrawSprite(16)
+		endif
+		DrawSpriteScreenXY(18,TempValue0,11)
+		DrawSpriteScreenXY(20,TempValue1,11)
+		break
+
+	endswitch
+#endplatform
+endsub
+
+
+sub ObjectStartup
+	LoadSpriteSheet("Achievements/Achievements.gif")
+	ReadSaveRAM()
+	if SaveRAM[265]==1
+		SpriteFrame(-32,-32,64,64,66,66)
+	else
+		SpriteFrame(-32,-32,64,64,66,196)
+	endif
+	if SaveRAM[266]==1
+		SpriteFrame(-32,-32,64,64,131,66)
+	else
+		SpriteFrame(-32,-32,64,64,131,196)
+	endif
+	if SaveRAM[267]==1
+		SpriteFrame(-32,-32,64,64,196,66)
+	else
+		SpriteFrame(-32,-32,64,64,196,196)
+	endif
+	if SaveRAM[268]==1
+		SpriteFrame(-32,-32,64,64,261,66)
+	else
+		SpriteFrame(-32,-32,64,64,261,196)
+	endif
+	SpriteFrame(-32,-32,64,64,261,1)
+	SpriteFrame(-32,-32,64,64,326,1)
+	SpriteFrame(-32,-32,64,64,391,1)
+	SpriteFrame(-32,-32,64,64,1,66)
+	SpriteFrame(-32,-32,64,64,66,66)
+	SpriteFrame(-32,-32,64,64,131,66)
+	SpriteFrame(-32,-32,64,64,196,66)
+	SpriteFrame(-32,-32,64,64,261,66)
+	SpriteFrame(-64,-72,128,144,128,432)
+	SpriteFrame(-64,-72,128,144,256,432)
+	SpriteFrame(-64,-72,128,144,384,432)
+	SpriteFrame(-35,-35,70,70,306,873)
+	SpriteFrame(-67,-95,64,20,280,680)
+	SpriteFrame(-67,-95,64,20,135,617)
+	SpriteFrame(0,0,64,20,280,659)
+	SpriteFrame(0,0,64,20,200,617)
+	SpriteFrame(0,0,64,20,345,659)
+	SpriteFrame(0,0,64,20,265,617)
+endsub
+
+sub RSDK
+	LoadSpriteSheet("Global/Display.gif")
+	SetEditorIcon(Icon0,SingleIcon,-16,-16,32,32,1,143)
+endsub

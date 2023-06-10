@@ -1,0 +1,589 @@
+//------------Sonic CD Stage Setup Script-------------//
+//--------Scripted by Christian Whitehead 'The Taxman'--------//
+//-------Unpacked By Rubberduckycooly's Script Unpacker-------//
+
+//-------Aliases-------//
+#alias 2: TYPE_STAGESETUP
+
+#alias Player.Value0:Player.Rings
+#alias Player.Value1:Player.AbilityTimer
+#alias Player.Value3:Player.SpeedShoes
+#alias Player.Value4:Player.Invincible
+#alias Player.Value5:Player.BlinkTimer
+#alias Player.Value6:Player.MinRollSpeed
+#alias Player.Value8:Player.ScrollDelay
+#alias Player.Value15:Player.FlightGravity
+
+#function PlayerObject_ProcessPlayer
+
+function PlayerObject_ProcessPlayer
+#platform: Standard
+	if Options.AttractMode==0
+		if Player.ControlMode==0
+			if Object[9].Type==TypeName[BlankObject]
+				if KeyPress.Start==1
+					KeyPress.Start=0
+					if Options.DevMenuFlag==1
+						Stage.State=STAGE_PAUSED
+						PauseMusic()
+						PlaySfx(27,0)
+						StopSfx(14)
+						StopSfx(24)
+						StopSfx(25)
+						Object[9].Type=TypeName[PauseMenu]
+						Object[9].DrawOrder=6
+						Object[9].Priority=2
+					else
+						EngineCallback(13)
+					endif
+				endif
+			endif
+		endif
+		ProcessPlayerControl()
+	endif
+#endplatform
+
+#platform: Use_Decomp
+	if Options.AttractMode == false
+		if Player.ControlMode == 0
+			if Object[9].Type == TypeName[Blank Object]
+				if Engine.Message == 2
+					Stage.State=STAGE_PAUSED
+					PauseMusic()
+					PlaySfx(27,0)
+					StopSfx(14)
+					StopSfx(24)
+					StopSfx(25)
+					Object[9].Type=TypeName[PauseMenu]
+					Object[9].DrawOrder=6
+					Object[9].Priority=2
+					if Engine.FrameSkipTimer > -1
+						Engine.FrameSkipTimer = -1
+					end if
+				end if
+			end if
+		end if
+	end if
+#endplatform
+
+#platform: Mobile
+	if Options.AttractMode==false
+		if Options.TouchControls==true
+			if Player.ControlMode==0
+				CheckTouchRect(0,96,Screen.CenterX,Screen.YSize)
+				if CheckResult>-1
+					ArrayPos0=CheckResult
+					TempValue0=TouchScreen[ArrayPos0].XPos
+					TempValue0-=Options.DPadX
+					TempValue1=TouchScreen[ArrayPos0].YPos
+					TempValue1-=192
+					ATan2(TempValue2,TempValue0,TempValue1)
+					TempValue2+=32
+					TempValue2&=255
+					TempValue2>>=6
+					switch TempValue2
+					case 0
+						KeyDown.Right=1
+						break
+					case 1
+						KeyDown.Down=1
+						break
+					case 2
+						KeyDown.Left=1
+						break
+					case 3
+						KeyDown.Up=1
+						break
+					endswitch
+				endif
+				CheckTouchRect(Screen.CenterX,96,Screen.XSize,240)
+				if CheckResult>-1
+					KeyDown.ButtonA=1
+				endif
+				if Object[25].Value7==0
+					KeyPress.ButtonA|=KeyDown.ButtonA
+				endif
+				Object[25].Value7=KeyDown.ButtonA
+				if Object[9].Type==TypeName[BlankObject]
+					CheckTouchRect(240,0,Screen.XSize,40)
+					if CheckResult>-1
+						Stage.State=STAGE_PAUSED
+						PauseMusic()
+						PlaySfx(27,0)
+						StopSfx(24)
+						StopSfx(25)
+						Object[9].Type=TypeName[PauseMenu]
+						Object[9].DrawOrder=6
+						Object[9].Priority=2
+						if Engine.FrameSkipTimer>-1
+							Engine.FrameSkipTimer=-1
+						endif
+					endif
+					if Engine.Message==2
+						Stage.State=STAGE_PAUSED
+						PauseMusic()
+						PlaySfx(27,0)
+						StopSfx(24)
+						StopSfx(25)
+						Object[9].Type=TypeName[PauseMenu]
+						Object[9].DrawOrder=6
+						Object[9].Priority=2
+						if Engine.FrameSkipTimer>-1
+							Engine.FrameSkipTimer=-1
+						endif
+					endif
+				endif
+			endif
+		else
+			if Player.ControlMode==0
+				if Object[9].Type==TypeName[BlankObject]
+					if KeyPress.Start==1
+						KeyPress.Start=0
+						Stage.State=STAGE_PAUSED
+						PauseMusic()
+						PlaySfx(27,0)
+						StopSfx(24)
+						StopSfx(25)
+						Object[9].Type=TypeName[PauseMenu]
+						Object[9].DrawOrder=6
+						Object[9].Priority=2
+						if Engine.FrameSkipTimer>-1
+							Engine.FrameSkipTimer=-1
+						endif
+					endif
+					if Engine.Message==2
+						Stage.State=STAGE_PAUSED
+						PauseMusic()
+						PlaySfx(27,0)
+						StopSfx(24)
+						StopSfx(25)
+						Object[9].Type=TypeName[PauseMenu]
+						Object[9].DrawOrder=6
+						Object[9].Priority=2
+						if Engine.FrameSkipTimer>-1
+							Engine.FrameSkipTimer=-1
+						endif
+					endif
+				endif
+			endif
+		endif
+		ProcessPlayerControl()
+	endif
+#endplatform
+
+	if Player.SpeedShoes>0
+		Player.SpeedShoes--
+		if Player.SpeedShoes==0
+			Player.Acceleration=3072
+			Player.AirAcceleration=6144
+			Player.TopSpeed=393216
+			if Music.CurrentTrack==3
+				PlayMusic(0)
+			endif
+		endif
+	endif
+	if Player.Invincible>0
+		if Player.State!=PlayerObject_Knockback
+			if Player.Invincible>2000
+				Player.Invincible=120
+				Player.BlinkTimer=3
+			endif
+		endif
+		if Player.BlinkTimer>0
+			Player.BlinkTimer++
+			if Player.BlinkTimer>8
+				Player.BlinkTimer=1
+			endif
+			if Player.BlinkTimer>4
+				Player.Visible=0
+			else
+				Player.Visible=1
+			endif
+		endif
+		Player.Invincible--
+		
+		if Player.Invincible==0
+			Player.BlinkTimer=0
+			Player.Visible=1
+			if Music.CurrentTrack==2
+				PlayMusic(0)
+			endif
+			if Object[+2].Type==TypeName[Invincibility]
+				switch Object[+2].PropertyValue
+				case 0
+					TempValue0=Player.EntityNo
+					TempValue0+=2
+					ResetObjectEntity(TempValue0,TypeName[BlankObject],0,0,0)
+					break
+				case 1
+					TempValue0=Player.EntityNo
+					TempValue0+=2
+					ResetObjectEntity(TempValue0,TypeName[BlankObject],0,0,0)
+					Object[+2].Type=TypeName[BlueShield]
+					Object[+2].PropertyValue=1
+					Object[+2].Priority=1
+					Object[+2].DrawOrder=4
+					Object[+2].InkEffect=2
+					Object[+2].Alpha=160
+					Object[+2].XPos=Player.XPos
+					Object[+2].YPos=Player.YPos
+					break
+
+				endswitch
+			endif
+		endif
+	endif
+	if Player.State!=PlayerObject_LookingUp
+		if Player.State!=PlayerObject_Crouching
+			if Player.LookPos>0
+				Player.LookPos-=2
+			endif
+			if Player.LookPos<0
+				Player.LookPos+=2
+			endif
+		endif
+	endif
+	
+	if Warp.Timer>0
+		Warp.Timer++
+#platform: Standard
+		if Warp.Timer==83
+#endplatform
+#platform: Mobile
+		if Warp.Timer==83
+#endplatform
+			//Screen.CameraEnabled=0
+			//CreateTempObject(TypeName[TimeWarp],0,0,0)
+			CreateTempObject(TypeName[WarpStar],1,Player.XPos,Player.YPos)
+			Object[TempObjectPos].DrawOrder=6
+			PlaySfx(14,0)
+		endif
+	endif
+	if Player.ScrollDelay>0
+		Player.ScrollDelay--
+		if Player.ScrollDelay==0
+			Screen.CameraStyle=1
+		endif
+	endif
+	if Player.State!=PlayerObject_HandleTailsFlight
+		if Player.FlightGravity!=0
+			StopSfx(24)
+			StopSfx(25)
+			Player.FlightGravity=0
+		endif
+	endif
+
+endfunction
+
+
+function StageSetup_CheckGoodFuture
+	if Good_Future==1
+		if Object.PropertyValue>0
+			ResetObjectEntity(Object.EntityNo,Flower_TypeNo,1,Object.XPos,Object.YPos)
+			Object.DrawOrder=4
+			Object.State=1
+		else
+			if Object[24].PropertyValue>0
+				ResetObjectEntity(Object.EntityNo,Flower_TypeNo,1,Object.XPos,Object.YPos)
+				Object.DrawOrder=4
+				Object.State=1
+			endif
+		endif
+	endif
+endfunction
+
+
+function StageSetup_SaveStageState
+	ArrayPos0=32
+	ArrayPos1=7168
+	TempValue1=Object[24].PropertyValue
+	TempValue1+=4
+	while ArrayPos0<1056
+		if Object[ArrayPos0].Type==TypeName[BlankObject]
+			SetBit(SaveRAM[ArrayPos1],Object[24].PropertyValue,1)
+		else
+			if Object[ArrayPos0].Type==TypeName[BrokenMonitor]
+				SetBit(SaveRAM[ArrayPos1],Object[24].PropertyValue,1)
+			else
+				if Object[ArrayPos0].Type==TypeName[FuturePost]
+					if Object[ArrayPos0].State==2
+						SetBit(SaveRAM[ArrayPos1],Object[24].PropertyValue,1)
+					else
+						SetBit(SaveRAM[ArrayPos1],Object[24].PropertyValue,0)
+					endif
+				else
+					if Object[ArrayPos0].Type==TypeName[PastPost]
+						if Object[ArrayPos0].State==2
+							SetBit(SaveRAM[ArrayPos1],Object[24].PropertyValue,1)
+						else
+							SetBit(SaveRAM[ArrayPos1],Object[24].PropertyValue,0)
+						endif
+					else
+						SetBit(SaveRAM[ArrayPos1],Object[24].PropertyValue,0)
+						if Object[ArrayPos0].Type==Flower_TypeNo
+							SetBit(SaveRAM[ArrayPos1],TempValue1,1)
+						else
+							SetBit(SaveRAM[ArrayPos1],TempValue1,0)
+						endif
+					endif
+				endif
+			endif
+		endif
+		ArrayPos0++
+		ArrayPos1++
+	loop
+endfunction
+
+
+function StageSetup_LoadStageState
+	ArrayPos0=32
+	ArrayPos1=7168
+	TempValue1=Object[24].PropertyValue
+	TempValue1+=4
+	while ArrayPos0<1056
+		if Object[ArrayPos0].Type==TypeName[Ring]
+			GetBit(TempValue0,SaveRAM[ArrayPos1],Object[24].PropertyValue)
+			if TempValue0==1
+				Object[ArrayPos0].Type=TypeName[BlankObject]
+			endif
+		else
+			if Object[ArrayPos0].Type==TypeName[Monitor]
+				GetBit(TempValue0,SaveRAM[ArrayPos1],Object[24].PropertyValue)
+				if TempValue0==1
+					Object[ArrayPos0].Type=TypeName[BrokenMonitor]
+					Object[ArrayPos0].State=2
+				endif
+			else
+				if Object[ArrayPos0].Type==TypeName[FuturePost]
+					GetBit(TempValue0,SaveRAM[ArrayPos1],Object[24].PropertyValue)
+					if TempValue0==1
+						Object[ArrayPos0].State=2
+					endif
+				else
+					if Object[ArrayPos0].Type==TypeName[PastPost]
+						GetBit(TempValue0,SaveRAM[ArrayPos1],Object[24].PropertyValue)
+						if TempValue0==1
+							Object[ArrayPos0].State=2
+						endif
+					else
+						GetBit(TempValue0,SaveRAM[ArrayPos1],TempValue1)
+						if TempValue0==1
+							Object[ArrayPos0].Type=TypeName[BlankObject]
+						endif
+					endif
+				endif
+			endif
+		endif
+		ArrayPos0++
+		ArrayPos1++
+	loop
+endfunction
+
+
+sub ObjectMain
+	Ring.AniCount++
+	if Ring.AniCount==4
+		Ring.AniCount=0
+		Ring.Frame++
+		Ring.Frame&=7
+	endif
+	if Player.Score>=Player.ScoreBonus
+		Player.Lives++
+		Player.2UpCounter++
+		Player.ScoreBonus+=50000
+		switch Stage.PlayerListPos
+			case 0
+			if Player.2UpCounter==1
+				PlaySfx(20,0)
+			else
+				PlaySfx(31,0)
+			endif
+			break
+			case 1
+				PlaySfx(21,0)
+				break
+			case 2
+				PlaySfx(29,0)
+				break  
+		endswitch
+	endif
+	Oscillation++
+	Oscillation&=511
+	if Stage.TimeEnabled==1
+		if Stage.Minutes==10
+			Stage.Minutes=9
+			Stage.Seconds=59
+			Stage.MilliSeconds=99
+			Stage.TimeEnabled=0
+			Object[0].Type=TypeName[PlayerObject]
+			CallFunction(PlayerObject_Kill)
+		endif
+	endif
+endsub
+
+
+sub ObjectPlayerInteraction
+	TempValue0=Player.CollisionLeft
+	TempValue0<<=16
+	TempValue0+=Player.XPos
+	TempValue1=Stage.XBoundary1
+	TempValue1<<=16
+	if TempValue0<TempValue1
+		if Player.Right==1
+			Player.XVelocity=65536
+			Player.Speed=65536
+		else
+			Player.XVelocity=0
+			Player.Speed=0
+		endif
+		Player.XPos=TempValue1
+		TempValue0=Player.CollisionLeft
+		TempValue0<<=16
+		Player.XPos-=TempValue0
+	endif
+	TempValue0=Player.CollisionBottom
+	TempValue0<<=16
+	TempValue0+=Player.YPos
+	if TempValue0>Stage.DeathBoundary
+		CallFunction(PlayerObject_Kill)
+	endif
+endsub
+
+
+sub ObjectStartup
+	switch SaveRAM[352]//Zone Complete
+	case 0
+		SetMusicTrack("AR/ZoneComplete.ogg",1,0)
+		break
+	case 1
+		SetMusicTrack("JP/ZoneComplete.ogg",1,0)
+		break
+	case 2
+		SetMusicTrack("US/ZoneComplete.ogg",1,0)
+		break
+	endswitch			
+	switch SaveRAM[353]//Invincibility
+	case 0
+		SetMusicTrack("JP/Invincibility.ogg",2,0)
+		break
+	case 1
+		SetMusicTrack("US/Invincibility.ogg",2,0)
+		break
+	endswitch
+	switch SaveRAM[354]//Speed Shoes
+	case 0
+		SetMusicTrack("AR/SpeedShoes.ogg",3,0)
+		break
+	case 1
+		SetMusicTrack("JP/SpeedShoes.ogg",3,0)
+		break
+	case 2
+		SetMusicTrack("JP/SpeedShoes-Beta.ogg",3,0)
+		break
+	case 3
+		SetMusicTrack("US/SpeedShoes.ogg",3,0)
+		break
+	endswitch						
+	switch SaveRAM[350]//Boss
+	case 0
+		SetMusicTrack("AR/Boss.ogg",4,1)
+		break
+	case 1
+		SetMusicTrack("JP/Boss.ogg",4,1)
+		break
+	case 2
+		SetMusicTrack("US/Boss.ogg",4,1)
+		break
+	endswitch
+	switch SaveRAM[355]//Game Over
+	case 0
+		SetMusicTrack("US/GameOver.ogg",5,0)
+		break
+	case 1
+		SetMusicTrack("JP/GameOver.ogg",5,0)
+		break
+	endswitch			
+	Stage.PauseEnabled=0
+	Screen.CameraStyle=1
+	Screen.CameraTarget=0
+	Stage.DeathBoundary=Stage.YBoundary2
+	Stage.DeathBoundary<<=16
+	Object[23].Type=TypeName[StageSetup]
+	Object[23].Priority=1
+	Oscillation=0
+	ArrayPos0=32
+	while ArrayPos0<1056
+		if Object[ArrayPos0].Type==TypeName[StageSetup]
+			ResetObjectEntity(ArrayPos0,TypeName[BlankObject],0,0,0)
+		endif
+		ArrayPos0++
+	loop
+	ArrayPos0=32
+	while ArrayPos0<1056
+		if Object[ArrayPos0].Type==TypeName[HUD]
+			Object[ArrayPos0].Type=TypeName[BlankObject]
+			Object[24].Type=TypeName[HUD]
+			Object[24].Priority=1
+			Object[24].DrawOrder=6
+			Object[24].PropertyValue=Object[ArrayPos0].PropertyValue
+		endif
+		ArrayPos0++
+	loop
+	Warp.Timer=0
+	if Warp.XPos>0
+		Player.XPos=Warp.XPos
+		Player.YPos=Warp.YPos
+		Player.XVelocity=Warp.XVelocity
+		Player.YVelocity=Warp.YVelocity
+		Player.Speed=Warp.Speed
+		Player.CollisionMode=Warp.CollisionMode
+		Player.Gravity=Warp.Gravity
+		Player.State=Warp.State
+		Player.Animation=Warp.Animation
+		Player.Frame=Warp.PlayerFrame
+		Player.Angle=Warp.Angle
+		Player.Rings=Warp.Rings
+		Player.MinRollSpeed=Warp.MinRollSpeed
+		Stage.MilliSeconds=Rec_Milliseconds
+		Stage.Seconds=Rec_Seconds
+		Stage.Minutes=Rec_Minutes
+		CallFunction(StageSetup_LoadStageState)
+	else
+		ArrayPos0=7168
+		while ArrayPos0<8192
+			SaveRAM[ArrayPos0]=0
+			ArrayPos0++
+		loop
+		Player.Direction=FACING_RIGHT
+		Player.Left=0
+		Player.Right=1
+		Player.ControlMode=-1
+		Player.Speed=0
+		Player.Animation=0
+	endif
+	if Object[24].PropertyValue==2
+		Good_Future=1
+		Transporter_Destroyed=1
+	endif
+	if SpecialStage.TimeStones==127
+		Good_Future=1
+		Transporter_Destroyed=1
+	endif
+	Warp.Destination=0
+	Ring.ExtraLife=100
+	Player.RoofBarrier=0
+	
+	if LampPost.Check==0
+		EngineCallback(17)
+	else
+		EngineCallback(18)
+	endif
+	if Warp.Count==1
+		EngineCallback(18)
+	endif
+endsub
+
+sub RSDK
+	LoadSpriteSheet("Global/Display.gif")
+	SetEditorIcon(Icon0,SingleIcon,-16,-16,32,32,1,143)
+endsub

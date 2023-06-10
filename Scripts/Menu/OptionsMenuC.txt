@@ -1,0 +1,370 @@
+//------------Sonic CD Options Menu Script-------------//
+//--------Scripted by Christian Whitehead 'The Taxman'--------//
+//-------Unpacked By Rubberduckycooly's Script Unpacker-------//
+
+//-------Aliases-------//
+#alias 7: TYPE_OPTIONSMENUC
+
+function OptionsMenuC_Function6
+	switch Object[+ArrayPos0].Value2
+	case 0
+		if ArrayPos0==Object.Value1
+			DrawSpriteScreenFX(9,FX_INK,Object.XPos,Object.YPos)
+			TempValue0=ArrayPos0
+			TempValue0+=14
+			//DrawSpriteScreenFX(TempValue0,FX_INK,Object.XPos,Object.YPos)
+		else
+			TempValue0=ArrayPos0
+			TempValue0+=10
+			DrawSpriteScreenFX(TempValue0,FX_INK,Object.XPos,Object.YPos)
+		endif
+		break
+	case 1
+		TempValue0=Object.Value0
+		TempValue0&=3
+		TempValue0>>=1
+		DrawSpriteScreenFX(9,FX_INK,Object.XPos,Object.YPos)
+		if TempValue0==0
+			TempValue0=ArrayPos0
+			TempValue0+=14
+			DrawSpriteScreenFX(TempValue0,FX_INK,Object.XPos,Object.YPos)
+		endif
+		break
+
+	endswitch
+	//DrawSpriteScreenFX(8,FX_INK,Object.XPos,Object.YPos)
+	DrawSpriteScreenFX(31,FX_INK,Object.XPos,Object.YPos)
+endfunction
+
+sub ObjectMain
+	switch Object.State
+	case 0
+		Object.XPos=Screen.CenterX
+		Object.XPos-=126
+		Object.State++
+		break
+	case 1
+			ReadSaveRAM()
+			if SaveRAM[32]==0
+				SaveRAM[33]=100
+				SaveRAM[34]=100
+				SaveRAM[35]=0
+			endif
+			Object.State=4
+			Object.YPos=40
+			Object.YPos*=Object.Value1
+			Object.YPos+=Screen.CenterY
+			Object.YPos-=87
+		break
+	case 4
+		TempValue0=Screen.CenterY
+		TempValue0-=87
+		if Object.YPos>TempValue0
+			Object.YPos-=8
+			if Object.YPos<TempValue0
+				Object.YPos=TempValue0
+			endif
+		else
+			Object.State++
+			Object.Alpha=0
+			Object[+4].Value1=0
+#platform: Mobile
+			if Options.PhysicalControls==0
+				ArrayPos0=Object.Value1
+				Object[+4].Value1=-1
+			endif
+#endplatform
+		endif
+		break
+	case 5
+		if Object.Value0<256
+			Object.Alpha=Object.Value0
+			Object.Value0+=8
+		else
+			Object.Value0=0
+			Object.Alpha=255
+			Object.State++
+		endif
+		if Screen.CenterX>TempValue7
+			TempValue7+=3
+		endif
+		break
+	case 6
+		ArrayPos0=Object.Value1
+#platform: Mobile
+		if Options.PhysicalControls==1
+#endplatform
+			if KeyPress.Up==1
+				Object[+4].Value1--
+				PlaySfx(23,0)
+				if Object[+4].Value1<0
+					Object[+4].Value1=1
+				endif
+			endif
+			if KeyPress.Down==1
+				Object[+4].Value1++
+				PlaySfx(23,0)
+				if Object[+4].Value1>1
+					Object[+4].Value1=0
+				endif
+			endif
+			switch Object[+4].Value1
+			//Page 1
+			case 0 // Starting Time
+			if SaveRAM[265]==1
+				if SaveRAM[295]==4 //Correct for Removed Random Mode
+					SaveRAM[295]=0
+				endif
+				if KeyPress.Left==1
+					if SaveRAM[295]==0
+						//Rand(Mod.RNGStore,4) // Update Random
+					endif
+					SaveRAM[295]--
+					if SaveRAM[295]<0
+						SaveRAM[295]=3
+					endif
+					PlaySfx(23,0)
+				endif
+				if KeyPress.Right==1
+					if SaveRAM[295]==3
+						//Rand(Mod.RNGStore,4) // Update Random
+					endif
+					SaveRAM[295]++
+					if SaveRAM[295]>3
+						SaveRAM[295]=0
+					endif
+					PlaySfx(23,0)
+				endif
+			endif
+				break
+			case 1 // Psycho-Egg
+				if KeyPress.Left==1
+					if SaveRAM[303]==0
+					endif
+					SaveRAM[303]--
+					if SaveRAM[303]<0
+						SaveRAM[303]=1
+					endif
+					PlaySfx(23,0)
+				endif
+				if KeyPress.Right==1
+					if SaveRAM[303]==3
+					endif
+					SaveRAM[303]++
+					if SaveRAM[303]>1
+						SaveRAM[303]=0
+					endif
+					PlaySfx(23,0)
+				endif
+				break
+				
+			endswitch
+		if KeyPress.ButtonB==1
+			Object.State=11
+			Object.Value0=248
+			SaveRAM[32]=1
+			WriteSaveRAM()
+			PlayStageSfx(1,0)
+		endif
+		break
+	case 11
+		if Object.Value0>0
+			Object.Alpha=Object.Value0
+			Object.Value0-=8
+		else
+			Object.Alpha=0
+			Object.State=10
+			Object[+10].Type=TypeName[BlankObject]
+		endif
+		break
+	endswitch
+endsub
+
+
+sub ObjectDraw
+	switch Object.State
+	case 0
+	case 1
+	case 2
+	case 3
+	case 8
+	case 10
+	case 4
+	case 5
+	case 6
+	case 9
+	case 11
+		ArrayPos0=Object.Value1
+		TempValue0=Screen.CenterX
+		TempValue0-=117
+#platform: Standard	
+		switch Object[+4].Value1
+		case 0 //Starting Time
+			DrawSpriteScreenFX(38,FX_INK,Object.XPos,Object.YPos)//Info
+			DrawSpriteScreenFX(33,FX_INK,TempValue0,82)//Highlight Time Zone
+			DrawSpriteScreenFX(40,FX_INK,TempValue0,113)//Pscyho-Egg Hard Mode
+			
+			break
+		case 1
+			DrawSpriteScreenFX(44,FX_INK,Object.XPos,Object.YPos)//Info
+			DrawSpriteScreenFX(32,FX_INK,TempValue0,82)//Time Zone
+			DrawSpriteScreenFX(41,FX_INK,TempValue0,113)//Highlight Psycho-Egg
+			break
+		endswitch
+#endplatform
+	TempValue6=Screen.CenterX
+	TempValue6+=54
+	TempValue6-=16
+	if Object[+4].Value1<5 //Page 1
+	//DrawSpriteScreenFX(141,FX_INK,TempValue6,208)
+	TempValue0=Screen.CenterX
+	switch SaveRAM[295]//Starting Time
+		case 0
+			TempValue0+=25
+			if SaveRAM[265]==1
+				DrawSpriteScreenFX(34,FX_INK,TempValue0,79)	
+			else
+				DrawSpriteScreenFX(39,FX_INK,TempValue0,79)	
+			endif
+			break
+		case 1
+			TempValue0+=25
+			DrawSpriteScreenFX(35,FX_INK,TempValue0,79)
+			break
+		case 2
+			TempValue0+=25
+			DrawSpriteScreenFX(36,FX_INK,TempValue0,79)
+			break
+		case 3
+			TempValue0+=25
+			DrawSpriteScreenFX(37,FX_INK,TempValue0,79)
+			break
+	endswitch
+	TempValue0=Screen.CenterX
+	if SaveRAM[303]==0// Psycho-Egg Hard Mode
+		TempValue0+=25
+		DrawSpriteScreenFX(42,FX_INK,TempValue0,110)
+	else
+		TempValue0+=25
+		DrawSpriteScreenFX(43,FX_INK,TempValue0,110)
+	endif
+	
+	CallFunction(OptionsMenuC_Function6)
+	endif
+	break
+	case 13
+	case 14
+	case 15
+		//ArrayPos0=Object.Value1
+		//Object.Alpha=255
+		//CallFunction(OptionsMenuC_Function6)
+		break
+
+	endswitch
+endsub
+
+
+sub ObjectStartup
+	TempValue7=Screen.CenterX		
+	TempValue7-=62
+	switch Engine.Language
+	case 0
+		LoadSpriteSheet("Menu/MenuGfx2_EN.gif")
+		break
+	case 1
+		LoadSpriteSheet("Menu/MenuGfx2_FR.gif")
+		break
+	case 2
+		LoadSpriteSheet("Menu/MenuGfx2_IT.gif")
+		break
+	case 3
+		LoadSpriteSheet("Menu/MenuGfx2_DE.gif")
+		break
+	case 4
+		LoadSpriteSheet("Menu/MenuGfx2_ES.gif")
+		break
+	case 5
+		LoadSpriteSheet("Menu/MenuGfx2_JP.gif")
+		break
+
+	endswitch
+#platform: Mobile
+	if SaveRAM[32]==0
+		SaveRAM[33]=100
+		SaveRAM[34]=100
+		SaveRAM[35]=0
+	endif
+	Options.OriginalControls=SaveRAM[35]
+#endplatform
+	SpriteFrame(4,122,32,32,479,34)
+	SpriteFrame(4,122,32,32,479,34)
+	SpriteFrame(4,122,32,32,479,34)
+	SpriteFrame(4,122,32,32,479,34)
+	SpriteFrame(0,0,20,20,168,366)
+	SpriteFrame(0,0,20,20,168,387)
+	SpriteFrame(0,0,20,20,189,366)
+	SpriteFrame(0,0,20,20,189,387)
+	SpriteFrame(45,12,13,13,488,1)
+	SpriteFrame(0,120,250,37,259,421)
+#platform: Standard  
+	SpriteFrame(64,12,128,16,1,69)
+#endplatform
+#platform: Mobile
+	if Options.DevMenuFlag==1
+		SpriteFrame(64,12,66,16,326,598)
+	else
+		SpriteFrame(64,12,128,16,130,69)
+	endif
+#endplatform
+	SpriteFrame(64,12,128,16,1,205)
+	SpriteFrame(64,12,128,16,1,222)
+	SpriteFrame(64,12,128,16,1,239)
+#platform: Standard  
+	SpriteFrame(64,12,128,16,130,69)//13
+#endplatform
+#platform: Mobile
+	if Options.DevMenuFlag==1
+		SpriteFrame(64,12,66,16,259,598)//14
+	else
+		SpriteFrame(64,12,128,16,1,69)//14
+	endif
+#endplatform			  
+	SpriteFrame(64,12,128,16,130,205)//15
+	SpriteFrame(64,12,128,16,130,222)//16
+	SpriteFrame(64,12,128,16,130,239)//17
+	SpriteFrame(0,0,38,20,171,324)//18
+	SpriteFrame(0,0,4,20,171,345)//19
+	SpriteFrame(0,0,8,20,171,345)//20
+	SpriteFrame(0,0,12,20,171,345)//21
+	SpriteFrame(0,0,16,20,171,345)//22
+	SpriteFrame(0,0,20,20,171,345)//23
+	SpriteFrame(0,0,24,20,171,345)//24
+	SpriteFrame(0,0,28,20,171,345)//25
+	SpriteFrame(0,0,32,20,171,345)//26
+	SpriteFrame(0,0,36,20,171,345)//27
+	SpriteFrame(0,0,38,20,171,345)//28
+	SpriteFrame(0,0,13,13,1,892)// Up 29
+	SpriteFrame(0,0,13,13,15,892)//Down 30
+	SpriteFrame(4,122,32,32,275,991)//Information icon 31
+	SpriteFrame(0,0,128,16,1,818)//Time Zone 32
+	SpriteFrame(0,0,128,16,130,818)//Highlight Time Zone 33
+	SpriteFrame(0,0,45,20,1,1003)//ST Present 34
+	SpriteFrame(0,0,45,20,47,1003)//ST Past 35
+	SpriteFrame(0,0,45,20,93,1003)//ST Future 36
+	SpriteFrame(0,0,45,20,139,1003)//ST Good Future 37
+	SpriteFrame(40,125,203,28,308,995)//ST Info 38
+	SpriteFrame(0,0,45,20,430,563)//ST Locked 39
+	SpriteFrame(0,0,128,16,1,852)//Psycho-Egg 40
+	SpriteFrame(0,0,128,16,130,852)//Highlight Psycho-Egg 41
+	SpriteFrame(0,0,45,20,67,982)//Normal 42
+	SpriteFrame(0,0,45,20,113,982)//Hard 43
+	SpriteFrame(40,125,203,28,308,966)//Psycho Egg Info 44
+	
+
+
+endsub
+
+sub RSDK
+	LoadSpriteSheet("Global/Display.gif")
+	SetEditorIcon(Icon0,SingleIcon,-16,-16,32,32,1,143)
+endsub

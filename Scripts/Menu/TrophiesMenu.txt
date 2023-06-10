@@ -1,0 +1,270 @@
+//------------Sonic CD Help Menu Script-------------//
+//--------Scripted by Christian Whitehead 'The Taxman'--------//
+//-------Unpacked By Rubberduckycooly's Script Unpacker-------//
+
+//-------Aliases-------//
+#alias 9: TYPE_TROPHIESMENU
+
+sub ObjectMain
+	switch Object.State
+	case 0
+		TempValue0=256
+		TempValue0-=Screen.CenterX
+		Screen.XOffset=TempValue0
+		Object.Value3=0
+		ReadSaveRAM()
+		PlayMusic(1)
+		Object.Value0=512
+		Object.State++
+		SetScreenFade(0,0,0,255)
+		break
+	case 1
+		if Object.Value0>0
+			Object.Value0-=8
+		else
+			Object.State++
+		endif
+		SetScreenFade(0,0,0,Object.Value0)
+		break
+	case 2
+		if KeyPress.Down==1
+			if Object.Value3<2
+				PlaySfx(27,0)
+				Object.Value0=256
+				Object.Value3++
+				Object.State=3
+			endif
+		endif
+		if KeyPress.Up==1
+			if Object.Value3>0
+				PlaySfx(27,0)
+				Object.Value3--
+				Object.State=4
+			endif
+		endif
+		if KeyPress.ButtonB==1
+			PlaySfx(26,0)
+			Object.State=5
+		endif
+		break
+	case 3
+		if Object.Value0>0
+			Cos(TempValue0,Object.Value0)
+			TempValue0>>=1
+			TempValue0+=256
+			Object.Value0-=3
+			if Object.Value0<0
+				Object.Value0=0
+			endif
+		else
+			Object.State=2
+		endif
+		break
+	case 4
+		if Object.Value0<256
+			Cos(TempValue0,Object.Value0)
+			TempValue0>>=1
+			TempValue0-=256
+			Object.Value0+=3
+			if Object.Value0>256
+				Object.Value0=256
+			endif
+		else
+			Object.Value0=0
+			Object.State=2
+		endif
+		break
+	case 5
+		if Object.Value0<348
+			Object.Value0+=8
+		else
+			Stage.ListPos=1
+			Engine.State=6
+			LoadStage()
+		endif
+		SetScreenFade(0,0,0,Object.Value0)
+		break
+
+	endswitch
+endsub
+
+
+sub ObjectDraw
+	Object.Value4--
+	if Object.Value4<-31
+		Object.Value4+=32
+	endif
+	TempValue1=Object.Value4
+	TempValue1>>=1
+	while TempValue1<Screen.YSize
+		TempValue0=Object.Value4
+		TempValue0>>=1
+		while TempValue0<Screen.XSize
+			DrawSpriteScreenXY(0,TempValue0,TempValue1)
+			TempValue0+=128
+		loop
+		TempValue1+=128
+	loop
+	TempValue2=Screen.XSize
+	TempValue2-=320
+	TempValue2/=2
+	TempValue3=Screen.YSize
+	TempValue3-=240
+	TempValue3/=2
+	switch Object.Value3
+		case 0
+			DrawSpriteScreenXY(1,TempValue2,TempValue3)
+			TempValue4=TempValue2
+			TempValue4+=53
+			TempValue5=TempValue3
+			TempValue5+=67
+			if SaveRAM[257]==1
+				DrawSpriteScreenXY(3,TempValue4,TempValue5)
+			else
+				DrawSpriteScreenXY(2,TempValue4,TempValue5)
+			endif
+			TempValue5+=52
+			if SaveRAM[258]==1
+				DrawSpriteScreenXY(3,TempValue4,TempValue5)
+			else
+				DrawSpriteScreenXY(2,TempValue4,TempValue5)
+			endif
+			TempValue5+=52
+			if SaveRAM[259]==1
+				DrawSpriteScreenXY(3,TempValue4,TempValue5)
+			else
+				DrawSpriteScreenXY(2,TempValue4,TempValue5)
+			endif
+			TempValue5+=52
+			if SaveRAM[260]==1
+				DrawSpriteScreenXY(3,TempValue4,TempValue5)
+			else
+				DrawSpriteScreenXY(2,TempValue4,TempValue5)
+			endif
+		break
+		case 1
+			DrawSpriteScreenXY(6,TempValue2,TempValue3)
+			TempValue4=TempValue2
+			TempValue4+=53
+			TempValue5=TempValue3
+			TempValue5+=67
+			if SaveRAM[261]==1
+				DrawSpriteScreenXY(3,TempValue4,TempValue5)
+			else
+				DrawSpriteScreenXY(2,TempValue4,TempValue5)
+			endif
+			TempValue5+=52
+			if SaveRAM[262]==1
+				DrawSpriteScreenXY(3,TempValue4,TempValue5)
+			else
+				DrawSpriteScreenXY(2,TempValue4,TempValue5)
+			endif
+			TempValue5+=52
+			if SaveRAM[263]==1
+				DrawSpriteScreenXY(3,TempValue4,TempValue5)
+			else
+				DrawSpriteScreenXY(2,TempValue4,TempValue5)
+			endif
+			TempValue5+=52
+			if SaveRAM[264]==1
+				DrawSpriteScreenXY(3,TempValue4,TempValue5)
+			else
+				DrawSpriteScreenXY(2,TempValue4,TempValue5)
+			endif
+		break
+		case 2
+			DrawSpriteScreenXY(7,TempValue2,TempValue3)
+			TempValue4=TempValue2
+			TempValue4+=53
+			TempValue5=TempValue3
+			TempValue5+=67
+			if SaveRAM[265]==1
+				DrawSpriteScreenXY(3,TempValue4,TempValue5)
+			else
+				DrawSpriteScreenXY(2,TempValue4,TempValue5)
+			endif
+			TempValue5+=52
+			if SaveRAM[266]==1
+				DrawSpriteScreenXY(3,TempValue4,TempValue5)
+			else
+				DrawSpriteScreenXY(2,TempValue4,TempValue5)
+			endif
+			TempValue5+=52
+			if SaveRAM[267]==1
+				DrawSpriteScreenXY(3,TempValue4,TempValue5)
+			else
+				DrawSpriteScreenXY(2,TempValue4,TempValue5)
+			endif
+			TempValue5+=52
+			if SaveRAM[268]==1
+				DrawSpriteScreenXY(3,TempValue4,TempValue5)
+			else
+				DrawSpriteScreenXY(2,TempValue4,TempValue5)
+			endif
+		break
+	endswitch	
+endsub
+
+
+sub ObjectStartup
+	switch Engine.Language
+		case 0
+			LoadSpriteSheet("Trophies/EN/SCD_Pg1_EN.gif")
+			break
+		case 1
+			LoadSpriteSheet("Trophies/FR/SCD_Pg1_FR.gif")
+			break
+		case 2
+			LoadSpriteSheet("Trophies/EN/SCD_Pg1_EN.gif")
+			break
+		case 3
+			LoadSpriteSheet("Trophies/EN/SCD_Pg1_EN.gif")
+			break
+		case 4
+			LoadSpriteSheet("Trophies/EN/SCD_Pg1_EN.gif")
+			break
+		case 5
+			LoadSpriteSheet("Trophies/EN/SCD_Pg1_EN.gif")
+			break
+	endswitch
+	SpriteFrame(0,0,128,128,0,0)
+	SpriteFrame(0,0,320,240,0,132)
+	SpriteFrame(0,0,160,11,135,9)
+	SpriteFrame(0,0,160,11,135,21)
+	SpriteFrame(0,0,128,128,0,0)
+	SpriteFrame(0,0,128,128,0,0)
+	SpriteFrame(0,0,320,240,321,132)
+	SpriteFrame(0,0,320,240,642,132)
+	if Engine.Language==5
+		Object[59].XPos-=1048576
+		Object[60].XPos-=1048576
+		Object[61].XPos-=1048576
+		Object[62].XPos-=1048576
+		Object[63].XPos-=1048576
+		Object[64].XPos+=5242880
+		Object[59].YPos+=1572864
+		Object[60].YPos+=1572864
+		Object[61].YPos+=1572864
+		Object[62].YPos+=1572864
+		Object[63].YPos+=1572864
+		Object[64].YPos-=3080192
+	endif
+	LoadPalette("HelpPalMod.act",0,0,0,256)
+	LoadPalette("HelpPalMod.act",1,0,0,256)
+	switch SaveRAM[359]
+	case 0
+		SetMusicTrack("JP/TitleScreen.ogg",1,000001)
+		break
+	case 1
+		SetMusicTrack("JP/DAGarden.ogg",1,1)
+		break
+	case 2
+		SetMusicTrack("US/DAGarden.ogg",1,117382)
+		break
+	endswitch
+endsub
+
+sub RSDK
+	LoadSpriteSheet("Global/Display.gif")
+	SetEditorIcon(Icon0,SingleIcon,-16,-16,32,32,1,143)
+endsub
