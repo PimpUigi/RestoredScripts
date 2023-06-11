@@ -7,10 +7,6 @@
 
 
 sub ObjectMain
-	if SaveRAM[303]==1
-		Stage.ListPos=71
-		LoadStage()
-	endif
 	Object.Rotation++
 	Object.Rotation%=144
 	TempValue0=Object.Value2
