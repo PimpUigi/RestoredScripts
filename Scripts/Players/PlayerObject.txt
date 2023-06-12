@@ -3399,6 +3399,7 @@ sub ObjectMain
 								Player.PeeloutFunction=PlayerObject_StartPeelout
 								Player.SpindashFunction=PlayerObject_StartSpindashCD
 							endif
+							Mini_PlayerFlag=0
 							CCStoredPlayer=1
 						CCPlayerChange=255
 					endif
@@ -3438,6 +3439,7 @@ sub ObjectMain
 							end if
 							// Restore Tails's tails
 							Object[1].Type = TypeName[Tails Object]
+							Mini_PlayerFlag=0
 							CCStoredPlayer=2
 						CCPlayerChange=255
 					endif
@@ -3469,6 +3471,7 @@ sub ObjectMain
 							Player.FlightFunction=PlayerObject_StartAmyDoubleJump
 							Player.PeeloutFunction=PlayerObject_StartJump
 							Player.SpindashFunction=PlayerObject_StartSpindashCD
+							Mini_PlayerFlag=0
 							CCStoredPlayer=3
 						CCPlayerChange=255
 					endif
@@ -3509,6 +3512,7 @@ sub ObjectMain
 								Player.PeeloutFunction=PlayerObject_StartPeelout
 								Player.SpindashFunction=PlayerObject_StartSpindashCD
 							endif
+							Mini_PlayerFlag=1
 							CCStoredPlayer=4
 						CCPlayerChange=255
 					endif
@@ -3546,6 +3550,7 @@ sub ObjectMain
 							else
 								Player.SpindashFunction = PlayerObject_StartSpindashCD
 							end if
+							Mini_PlayerFlag=1
 							// Delete the following Tails Object, since Mini Tails's tails are built-in with his sprites
 							Object[1].Type = TypeName[Blank Object]
 							CCStoredPlayer=5
@@ -3580,6 +3585,7 @@ sub ObjectMain
 							Player.PeeloutFunction=PlayerObject_StartJump
 							Player.SpindashFunction=PlayerObject_StartSpindashCD
 							CCStoredPlayer=6
+							Mini_PlayerFlag=1
 						CCPlayerChange=255
 					endif
 					if CCSlapSet==1	//Slap

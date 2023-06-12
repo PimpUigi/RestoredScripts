@@ -86,7 +86,7 @@ endsub
 
 
 sub ObjectPlayerInteraction
-	if Object.State<4
+	if Object.State < 4
 		if Object.Frame < 4
 			TempValue0=0
 			TempValue1=Object.XPos
@@ -94,7 +94,7 @@ sub ObjectPlayerInteraction
 			if SaveRAM[303] == 0
 				PlayerObjectCollision(C_TOUCH,-12,-12,12,12)
 			else
-				PlayerObjectCollision(C_TOUCH,-16,-12,16,12)
+				PlayerObjectCollision(C_TOUCH,-0,-0,0,0)
 			endif
 			TempValue0=CheckResult
 			Sin(Object.XPos,Object.Rotation)
@@ -105,7 +105,11 @@ sub ObjectPlayerInteraction
 			Object.YPos*=1048576
 			Object.YPos>>=9
 			Object.YPos+=TempValue2
-			PlayerObjectCollision(C_TOUCH,-10,-10,10,10)
+			if SaveRAM[303] == 0
+				PlayerObjectCollision(C_TOUCH,-10,-10,10,10)
+			else
+				PlayerObjectCollision(C_TOUCH,-0,-0,0,0)
+			endif
 			TempValue0|=CheckResult
 			Sin(Object.XPos,Object.Rotation)
 			Object.XPos*=1048576
@@ -115,7 +119,11 @@ sub ObjectPlayerInteraction
 			Object.YPos*=-1048576
 			Object.YPos>>=9
 			Object.YPos+=TempValue2
-			PlayerObjectCollision(C_TOUCH,-15,-15,15,15)
+			if SaveRAM[303] == 0
+				PlayerObjectCollision(C_TOUCH,-15,-15,15,15)
+			else
+				PlayerObjectCollision(C_TOUCH,-17,-17,17,17)
+			endif
 			TempValue0|=CheckResult
 			Object.XPos=TempValue1
 			Object.YPos=TempValue2
@@ -127,8 +135,28 @@ sub ObjectPlayerInteraction
 					endif
 				endif
 		else
-		if Object.Frame == 4
+		if SaveRAM[303] == 1
+			if Object.Frame == 4
+				PlayerObjectCollision(C_TOUCH,-8,-33,8,33)
+				if CheckResult==1
+					CallFunction(PlayerObject_Hit)
+					if Player.State==PlayerObject_Hurt
+						ArrayPos0=Object.Value7
+						Object[ArrayPos0].Animation=2
+						endif
+					endif
+				endif
+			endif
+		else
 			PlayerObjectCollision(C_TOUCH,-8,-33,8,33)
+			if CheckResult==1
+				CallFunction(PlayerObject_Hit)
+				if Player.State==PlayerObject_Hurt
+					ArrayPos0=Object.Value7
+					Object[ArrayPos0].Animation=2
+					endif
+				endif
+			endif
 		endif
 	endif
 endsub
